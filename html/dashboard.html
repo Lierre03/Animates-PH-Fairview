@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare Pro - RFID Grooming Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo::before {
+            content: "🐕";
+            margin-right: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #667eea;
+        }
+
+        .main-content {
+            background: white;
+            margin: 2rem auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-height: 80vh;
+        }
+
+        .page {
+            display: none;
+            padding: 2rem;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .page-header h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8eeff 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 0.2rem;
+        }
+
+        .status-waiting { background: #fff3cd; color: #856404; }
+        .status-bathing { background: #cce5ff; color: #0066cc; }
+        .status-grooming { background: #ffe6cc; color: #cc6600; }
+        .status-ready { background: #d4edda; color: #155724; }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+        }
+
+        .pet-list {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .pet-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .pet-info h4 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .pet-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .rfid-scanner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .rfid-status {
+            font-size: 1.2rem;
+            margin: 1rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 3px solid #667eea;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .workflow-step {
+            background: #f8f9ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px dashed #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-step:hover {
+            background: #e8eeff;
+            border-style: solid;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo"> 8Paws Boutique & Grooming Salon </div>
+                <ul class="nav-links">
+                    <li><a href="dashboard.html" onclick="showPage('dashboard')" class="nav-link active">Dashboard</a></li>
+                    <li><a href="staff_dashboard.html" onclick="showPage('staff')" class="nav-link">Staff Management</a></li>
+                    <li><a href="reports.html" onclick="showPage('reports')" class="nav-link">Reports</a></li>
+
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <p>Real-time overview of your grooming operations</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalPets">12</span>
+                        <span>Pets Today</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="inProgress">4</span>
+                        <span>In Progress</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="completed">8</span>
+                        <span>Completed</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="revenue">₱2,450</span>
+                        <span>Today's Revenue</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>📍 Current Status</h3>
+                        <div class="pet-list">
+                            <div class="pet-item">
+                                <div class="pet-info">
+                                    <h4>Snowy (Shih Tzu)</h4>
+                                    <p>RFID: A1B2C3D4 • Owner: Maria Santos</p>
+                                </div>
+                                <span class="status-indicator status-grooming">Grooming</span>
+                            </div>
+                            <div class="pet-item">
+                                <div class="pet-info">
+                                    <h4>Buddy (Golden Retriever)</h4>
+                                    <p>RFID: B2C3D4E5 • Owner: John Cruz</p>
+                                </div>
+                                <span class="status-indicator status-bathing">Bathing</span>
+                            </div>
+                            <div class="pet-item">
+                                <div class="pet-info">
+                                    <h4>Luna (Persian Cat)</h4>
+                                    <p>RFID: C3D4E5F6 • Owner: Anna Reyes</p>
+                                </div>
+                                <span class="status-indicator status-ready">Ready for Pickup</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🔄 RFID Scanner Status</h3>
+                        <div class="rfid-scanner">
+                            <div class="rfid-status">Scanner Ready</div>
+                            <p>Last scan: A1B2C3D4 - 2 minutes ago</p>
+                            <button class="btn" onclick="simulateRFIDScan()">Simulate RFID Scan</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>⚡ Quick Actions</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <button class="btn" onclick="showPage('checkin')">New Check-in</button>
+                            <button class="btn btn-secondary" onclick="showPage('tracking')">Update Pet Status</button>
+                            <button class="btn btn-secondary" onclick="showPage('billing')">Process Payment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Check-in Page -->
+            <div id="checkin" class="page">
+                <div class="page-header">
+                    <h1>Pet Check-in</h1>
+                    <p>Register a new pet for grooming services</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>🏷️ RFID Tag Assignment</h3>
+                        <div class="rfid-scanner">
+                            <div class="rfid-status" id="rfidStatus">Place RFID tag near scanner</div>
+                            <p id="rfidResult">Detected: <span id="detectedTag">None</span></p>
+                        </div>
+                    </div>
+
+                    <div class="card" style="grid-column: span 2;">
+                        <h3>📝 Pet Information</h3>
+                        <form id="checkinForm">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="petName">Pet Name</label>
+                                    <input type="text" id="petName" name="petName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="petBreed">Breed</label>
+                                    <input type="text" id="petBreed" name="petBreed" required>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="ownerName">Owner Name</label>
+                                    <input type="text" id="ownerName" name="ownerName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ownerPhone">Phone Number</label>
+                                    <input type="tel" id="ownerPhone" name="ownerPhone" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="services">Services Requested</label>
+                                <select id="services" name="services" multiple style="height: 100px;">
+                                    <option value="basic_bath">Basic Bath (₱300)</option>
+                                    <option value="full_groom">Full Grooming (₱600)</option>
+                                    <option value="nail_trim">Nail Trimming (₱100)</option>
+                                    <option value="ear_clean">Ear Cleaning (₱150)</option>
+                                    <option value="dental_care">Dental Care (₱200)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="specialInstructions">Special Instructions</label>
+                                <textarea id="specialInstructions" name="specialInstructions" rows="3"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn">Complete Check-in</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pet Tracking Page -->
+            <div id="tracking" class="page">
+                <div class="page-header">
+                    <h1>Pet Tracking</h1>
+                    <p>Monitor real-time grooming progress</p>
+                </div>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <h4>Check-in</h4>
+                        <p>RFID tag assigned</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <h4>Bathing</h4>
+                        <p>Pet washing stage</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <h4>Grooming</h4>
+                        <p>Styling & trimming</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <h4>Ready</h4>
+                        <p>Pickup notification</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🔍 Pet Status Updates</h3>
+                    <div class="pet-list" id="trackingList">
+                        <!-- Pet tracking items will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers Page -->
+            <div id="customers" class="page">
+                <div class="page-header">
+                    <h1>Customer Management</h1>
+                    <p>Manage customer profiles and history</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>👥 Customer Database</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" placeholder="Search customers..." style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <div class="pet-list" id="customerList">
+                            <!-- Customer list will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📊 Customer Insights</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <span class="stat-number">156</span>
+                                <span>Total Customers</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number">23</span>
+                                <span>New This Month</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number">89%</span>
+                                <span>Retention Rate</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Page -->
+            <div id="billing" class="page">
+                <div class="page-header">
+                    <h1>Billing & Payments</h1>
+                    <p>Process payments and manage invoices</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>💳 Quick Billing</h3>
+                        <div class="form-group">
+                            <label for="billPetSelect">Select Pet</label>
+                            <select id="billPetSelect">
+                                <option value="">Choose pet...</option>
+                                <option value="snowy">Snowy - Ready for pickup</option>
+                                <option value="buddy">Buddy - Grooming complete</option>
+                            </select>
+                        </div>
+                        <div id="billingSummary" style="display: none;">
+                            <h4>Billing Summary</h4>
+                            <div style="margin: 1rem 0; padding: 1rem; background: #f8f9ff; border-radius: 5px;">
+                                <p><strong>Services:</strong></p>
+                                <p>• Full Grooming: ₱600</p>
+                                <p>• Nail Trimming: ₱100</p>
+                                <hr style="margin: 0.5rem 0;">
+                                <p><strong>Total: ₱700</strong></p>
+                            </div>
+                            <button class="btn">Process Payment</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📄 Recent Transactions</h3>
+                        <div class="pet-list">
+                            <div class="pet-item">
+                                <div class="pet-info">
+                                    <h4>Luna - Persian Cat</h4>
+                                    <p>Services: Basic Bath, Ear Cleaning</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <strong>₱450</strong>
+                                    <br><small>Paid</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Page -->
+            <div id="staff" class="page">
+                <div class="page-header">
+                    <h1>Staff Management</h1>
+                    <p>Manage staff schedules and performance</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>👨‍💼 Staff on Duty</h3>
+                        <div class="pet-list">
+                            <div class="pet-item">
+                                <div class="pet-info">
+                                    <h4>Sarah Johnson</h4>
+                                    <p>Senior Groomer • Currently: Grooming Snowy</p>
+                                </div>
+                                <span class="status-indicator status-grooming">Busy</span>
+                            </div>
+                            <div class="pet-item">
+                                <div class="pet-info">
+                                    <h4>Mike Rivera</h4>
+                                    <p>Bath Specialist • Currently: Bathing Buddy</p>
+                                </div>
+                                <span class="status-indicator status-bathing">Busy</span>
+                            </div>
+                            <div class="pet-item">
+                                <div class="pet-info">
+                                    <h4>Lisa Chen</h4>
+                                    <p>Junior Groomer • Status: Available</p>
+                                </div>
+                                <span class="status-indicator status-ready">Available</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📅 Task Assignment</h3>
+                        <form>
+                            <div class="form-group">
+                                <label for="assignStaff">Assign Staff</label>
+                                <select id="assignStaff">
+                                    <option>Sarah Johnson</option>
+                                    <option>Mike Rivera</option>
+                                    <option>Lisa Chen</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="assignPet">To Pet</label>
+                                <select id="assignPet">
+                                    <option>Snowy (Waiting)</option>
+                                    <option>Max (Bathing)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn">Assign Task</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div id="reports" class="page">
+                <div class="page-header">
+                    <h1>Reports & Analytics</h1>
+                    <p>Business insights and performance metrics</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number">₱45,230</span>
+                        <span>Monthly Revenue</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">187</span>
+                        <span>Pets Served</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">4.8</span>
+                        <span>Avg Rating</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">95%</span>
+                        <span>RFID Accuracy</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>📈 Performance Metrics</h3>
+                        <p>RFID Read Accuracy: <strong>97.5%</strong> ✅</p>
+                        <p>Avg Update Speed: <strong>3.2 seconds</strong> ✅</p>
+                        <p>Customer Satisfaction: <strong>87%</strong> ✅</p>
+                        <p>Staff System Usage: <strong>92%</strong> ✅</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🕒 Service Times</h3>
+                        <p>Average Bath Time: <strong>25 minutes</strong></p>
+                        <p>Average Groom Time: <strong>45 minutes</strong></p>
+                        <p>Total Turnaround: <strong>1.2 hours</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settings" class="page">
+                <div class="page-header">
+                    <h1>System Settings</h1>
+                    <p>Configure your RFID grooming system</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>🔧 RFID Configuration</h3>
+                        <div class="form-group">
+                            <label for="rfidMode">Scanner Mode</label>
+                            <select id="rfidMode">
+                                <option>Auto-scan (Recommended)</option>
+                                <option>Manual scan</option>
+                                <option>Continuous scan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="scanDelay">Scan Delay (seconds)</label>
+                            <input type="number" id="scanDelay" value="2" min="1" max="10">
+                        </div>
+                        <button class="btn">Save RFID Settings</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>💰 Service Pricing</h3>
+                        <div class="form-group">
+                            <label for="basicBath">Basic Bath</label>
+                            <input type="number" id="basicBath" value="300">
+                        </div>
+                        <div class="form-group">
+                            <label for="fullGroom">Full Grooming</label>
+                            <input type="number" id="fullGroom" value="600">
+                        </div>
+                        <div class="form-group">
+                            <label for="nailTrim">Nail Trimming</label>
+                            <input type="number" id="nailTrim" value="100">
+                        </div>
+                        <button class="btn">Update Pricing</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>📱 Notifications</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <input type="checkbox" id="smsNotify" checked>
+                            <label for="smsNotify">SMS notifications to customers</label>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <input type="checkbox" id="emailNotify" checked>
+                            <label for="emailNotify">Email receipts</label>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <input type="checkbox" id="staffAlerts">
+                            <label for="staffAlerts">Staff mobile alerts</label>
+                        </div>
+                        <button class="btn">Save Notification Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        let petData = [
+            {
+                rfid: 'A1B2C3D4',
+                name: 'Snowy',
+                breed: 'Shih Tzu',
+                owner: 'Maria Santos',
+                phone: '09123456789',
+                status: 'grooming',
+                checkinTime: '10:00 AM',
+                services: ['Full Grooming', 'Nail Trimming'],
+                staff: 'Sarah Johnson'
+            },
+            {
+                rfid: 'B2C3D4E5',
+                name: 'Buddy',
+                breed: 'Golden Retriever',
+                owner: 'John Cruz',
+                phone: '09987654321',
+                status: 'bathing',
+                checkinTime: '10:30 AM',
+                services: ['Basic Bath', 'Ear Cleaning'],
+                staff: 'Mike Rivera'
+            },
+            {
+                rfid: 'C3D4E5F6',
+                name: 'Luna',
+                breed: 'Persian Cat',
+                owner: 'Anna Reyes',
+                phone: '09555123456',
+                status: 'ready',
+                checkinTime: '9:30 AM',
+                services: ['Basic Bath', 'Ear Cleaning'],
+                staff: 'Lisa Chen'
+            }
+        ];
+
+        let customerData = [
+            {
+                name: 'Maria Santos',
+                phone: '09123456789',
+                email: 'maria@email.com',
+                pets: ['Snowy (Shih Tzu)', 'Max (Beagle)'],
+                visits: 12,
+                lastVisit: '2025-08-10'
+            },
+            {
+                name: 'John Cruz',
+                phone: '09987654321',
+                email: 'john@email.com',
+                pets: ['Buddy (Golden Retriever)'],
+                visits: 8,
+                lastVisit: '2025-08-10'
+            },
+            {
+                name: 'Anna Reyes',
+                phone: '09555123456',
+                email: 'anna@email.com',
+                pets: ['Luna (Persian Cat)', 'Milo (Maine Coon)'],
+                visits: 15,
+                lastVisit: '2025-08-09'
+            }
+        ];
+
+        // Available RFID tags
+        let availableRFIDTags = ['D4E5F6G7', 'E5F6G7H8', 'F6G7H8I9', 'G7H8I9J0'];
+        let currentDetectedTag = null;
+
+        // Navigation function
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update navigation
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Load page-specific content
+            loadPageContent(pageId);
+        }
+
+        // Load content for specific pages
+        function loadPageContent(pageId) {
+            switch(pageId) {
+                case 'tracking':
+                    loadTrackingContent();
+                    break;
+                case 'customers':
+                    loadCustomerContent();
+                    break;
+                case 'billing':
+                    setupBillingPage();
+                    break;
+            }
+        }
+
+        // RFID Simulation
+        function simulateRFIDScan() {
+            const rfidStatus = document.querySelector('.rfid-status');
+            rfidStatus.textContent = 'Scanning...';
+            
+            setTimeout(() => {
+                const randomTag = availableRFIDTags[Math.floor(Math.random() * availableRFIDTags.length)];
+                rfidStatus.textContent = `Tag Detected: ${randomTag}`;
+                
+                // Find pet with this tag or create new entry
+                const pet = petData.find(p => p.rfid === randomTag);
+                if (pet) {
+                    updatePetStatus(pet);
+                }
+            }, 2000);
+        }
+
+        // Update pet status based on current status
+        function updatePetStatus(pet) {
+            const statusMap = {
+                'waiting': 'bathing',
+                'bathing': 'grooming',
+                'grooming': 'ready',
+                'ready': 'completed'
+            };
+            
+            if (pet.status in statusMap) {
+                pet.status = statusMap[pet.status];
+                updateDashboard();
+                
+                // Show notification
+                showNotification(`${pet.name} status updated to: ${pet.status}`);
+            }
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #667eea;
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Load tracking content
+        function loadTrackingContent() {
+            const trackingList = document.getElementById('trackingList');
+            trackingList.innerHTML = '';
+            
+            petData.forEach(pet => {
+                const petItem = document.createElement('div');
+                petItem.className = 'pet-item';
+                petItem.innerHTML = `
+                    <div class="pet-info">
+                        <h4>${pet.name} (${pet.breed})</h4>
+                        <p>RFID: ${pet.rfid} • Owner: ${pet.owner} • Staff: ${pet.staff}</p>
+                        <p>Check-in: ${pet.checkinTime} • Services: ${pet.services.join(', ')}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="status-indicator status-${pet.status}">${capitalizeFirst(pet.status)}</span>
+                        <br>
+                        <button class="btn" style="margin-top: 0.5rem; padding: 0.3rem 1rem; font-size: 0.9rem;" 
+                                onclick="advancePetStatus('${pet.rfid}')">
+                            Next Stage
+                        </button>
+                    </div>
+                `;
+                trackingList.appendChild(petItem);
+            });
+        }
+
+        // Load customer content
+        function loadCustomerContent() {
+            const customerList = document.getElementById('customerList');
+            customerList.innerHTML = '';
+            
+            customerData.forEach(customer => {
+                const customerItem = document.createElement('div');
+                customerItem.className = 'pet-item';
+                customerItem.innerHTML = `
+                    <div class="pet-info">
+                        <h4>${customer.name}</h4>
+                        <p>📞 ${customer.phone} • 📧 ${customer.email}</p>
+                        <p>🐕 Pets: ${customer.pets.join(', ')}</p>
+                        <p>📅 Visits: ${customer.visits} • Last: ${customer.lastVisit}</p>
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 0.5rem 1rem;">View Profile</button>
+                `;
+                customerList.appendChild(customerItem);
+            });
+        }
+
+        // Setup billing page
+        function setupBillingPage() {
+            const petSelect = document.getElementById('billPetSelect');
+            const billingSummary = document.getElementById('billingSummary');
+            
+            petSelect.addEventListener('change', function() {
+                if (this.value) {
+                    billingSummary.style.display = 'block';
+                } else {
+                    billingSummary.style.display = 'none';
+                }
+            });
+        }
+
+        // Advance pet status
+        function advancePetStatus(rfid) {
+            const pet = petData.find(p => p.rfid === rfid);
+            if (pet) {
+                updatePetStatus(pet);
+            }
+        }
+
+        // Utility function to capitalize first letter
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Update dashboard statistics
+        function updateDashboard() {
+            const totalPets = petData.length;
+            const inProgress = petData.filter(p => p.status === 'bathing' || p.status === 'grooming').length;
+            const completed = petData.filter(p => p.status === 'ready' || p.status === 'completed').length;
+            
+            document.getElementById('totalPets').textContent = totalPets;
+            document.getElementById('inProgress').textContent = inProgress;
+            document.getElementById('completed').textContent = completed;
+        }
+
+        // Check-in form handling
+        document.getElementById('checkinForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const newPet = {
+                rfid: currentDetectedTag || `NEW${Date.now()}`,
+                name: formData.get('petName'),
+                breed: formData.get('petBreed'),
+                owner: formData.get('ownerName'),
+                phone: formData.get('ownerPhone'),
+                status: 'waiting',
+                checkinTime: new Date().toLocaleTimeString(),
+                services: Array.from(formData.getAll('services')),
+                staff: 'Unassigned'
+            };
+            
+            petData.push(newPet);
+            updateDashboard();
+            showNotification(`${newPet.name} checked in successfully!`);
+            this.reset();
+        });
+
+        // RFID scanner simulation for check-in page
+        setInterval(() => {
+            if (document.getElementById('checkin').classList.contains('active')) {
+                const rfidStatus = document.getElementById('rfidStatus');
+                const detectedTag = document.getElementById('detectedTag');
+                
+                if (Math.random() > 0.7) { // 30% chance of detecting a tag
+                    const randomTag = availableRFIDTags[Math.floor(Math.random() * availableRFIDTags.length)];
+                    currentDetectedTag = randomTag;
+                    rfidStatus.textContent = 'RFID Tag Detected!';
+                    rfidStatus.style.color = '#28a745';
+                    detectedTag.textContent = randomTag;
+                } else {
+                    currentDetectedTag = null;
+                    rfidStatus.textContent = 'Place RFID tag near scanner';
+                    rfidStatus.style.color = '#ffffff';
+                    detectedTag.textContent = 'None';
+                }
+            }
+        }, 3000);
+
+        // Add CSS animation for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize dashboard
+        updateDashboard();

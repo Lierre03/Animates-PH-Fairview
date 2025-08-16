@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare Pro - Staff Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#667eea',
+                        secondary: '#764ba2',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="text-2xl">🐕</div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">8Paws Boutique & Grooming Salon</h1>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="dashboard.html" class="text-gray-700 hover:text-primary transition-colors">Dashboard</a>
+                    <a href="#" class="text-primary font-semibold">Staff Management</a>
+                    <a href="reports.html" class="text-gray-700 hover:text-primary transition-colors">Reports</a>
+                    
+                </nav>
+
+                <!-- User Info -->
+                <div class="flex items-center space-x-4">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-medium text-gray-900">Manager Admin</p>
+                        <p class="text-xs text-gray-500">System Administrator</p>
+                    </div>
+                    <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-medium">
+                        MA
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Dashboard Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Active Staff</p>
+                        <p class="text-2xl font-bold text-gray-900">8</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Completed Today</p>
+                        <p class="text-2xl font-bold text-gray-900">23</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-yellow-100 rounded-lg">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">In Progress</p>
+                        <p class="text-2xl font-bold text-gray-900">12</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-purple-100 rounded-lg">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Efficiency Rate</p>
+                        <p class="text-2xl font-bold text-gray-900">94%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🚀 Staff Management</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button onclick="showSection('staff-assignments')" class="p-4 bg-blue-100 rounded-lg text-center hover:bg-blue-200 transition-colors">
+                    <div class="text-2xl mb-2">👥</div>
+                    <p class="text-sm font-medium text-gray-900">Staff Assignments</p>
+                </button>
+                <button onclick="showSection('task-monitoring')" class="p-4 bg-green-100 rounded-lg text-center hover:bg-green-200 transition-colors">
+                    <div class="text-2xl mb-2">📊</div>
+                    <p class="text-sm font-medium text-gray-900">Task Monitoring</p>
+                </button>
+                <button onclick="showSection('rfid-management')" class="p-4 bg-purple-100 rounded-lg text-center hover:bg-purple-200 transition-colors">
+                    <div class="text-2xl mb-2">📡</div>
+                    <p class="text-sm font-medium text-gray-900">RFID Management</p>
+                </button>
+                <button onclick="showSection('performance')" class="p-4 bg-orange-100 rounded-lg text-center hover:bg-orange-200 transition-colors">
+                    <div class="text-2xl mb-2">📈</div>
+                    <p class="text-sm font-medium text-gray-900">Performance</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- Staff Assignments Section -->
+        <section id="staff-assignments" class="section">
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">👥 Staff Assignments</h2>
+                    <button onclick="assignNewTask()" class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        + Assign New Task
+                    </button>
+                </div>
+
+                <!-- Staff Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Staff Member 1 -->
+                    <div class="border border-green-200 bg-green-50 rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="text-green-600 font-semibold">MS</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">Maria Santos</h3>
+                                    <p class="text-sm text-gray-600">Senior Groomer</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Available</span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white rounded p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium">Buddy - Full Grooming</span>
+                                    <span class="text-xs text-green-600">Completed</span>
+                                </div>
+                                <p class="text-xs text-gray-500">RFID: A1B2C3D4 • Duration: 1h 45m</p>
+                            </div>
+                            
+                            <div class="bg-white rounded p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium">Luna - Premium Care</span>
+                                    <span class="text-xs text-blue-600">In Progress</span>
+                                </div>
+                                <p class="text-xs text-gray-500">RFID: D4E5F6G7 • Started: 11:30 AM</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-green-200">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Today's Tasks:</span>
+                                <span class="font-medium">7/8 Complete</span>
+                            </div>
+                            <div class="w-full bg-green-200 rounded-full h-2 mt-1">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 87.5%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Staff Member 2 -->
+                    <div class="border border-blue-200 bg-blue-50 rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-600 font-semibold">JR</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">James Rodriguez</h3>
+                                    <p class="text-sm text-gray-600">Grooming Specialist</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">Busy</span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white rounded p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium">Rocky - Dental Care</span>
+                                    <span class="text-xs text-blue-600">Bathing</span>
+                                </div>
+                                <p class="text-xs text-gray-500">RFID: E5F6G7H8 • Started: 10:15 AM</p>
+                            </div>
+                            
+                            <div class="bg-gray-100 rounded p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium">Max - Basic Bath</span>
+                                    <span class="text-xs text-gray-600">Waiting</span>
+                                </div>
+                                <p class="text-xs text-gray-500">RFID: F6G7H8I9 • Queue: Next</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-blue-200">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Today's Tasks:</span>
+                                <span class="font-medium">5/9 Complete</span>
+                            </div>
+                            <div class="w-full bg-blue-200 rounded-full h-2 mt-1">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 55.5%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Staff Member 3 -->
+                    <div class="border border-yellow-200 bg-yellow-50 rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <span class="text-yellow-600 font-semibold">SJ</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">Sarah Johnson</h3>
+                                    <p class="text-sm text-gray-600">Assistant Groomer</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">Break</span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white rounded p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium">Break Time</span>
+                                    <span class="text-xs text-yellow-600">15 min left</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Returns at 12:30 PM</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-yellow-200">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Today's Tasks:</span>
+                                <span class="font-medium">4/6 Complete</span>
+                            </div>
+                            <div class="w-full bg-yellow-200 rounded-full h-2 mt-1">
+                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 66.6%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Task Monitoring Section -->
+        <section id="task-monitoring" class="section hidden">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">📊 Real-Time Task Monitoring</h2>
+                    <div class="flex space-x-2">
+                        <button class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            Refresh Status
+                        </button>
+                        <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            Export Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Task Pipeline Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-blue-50 rounded-lg p-6 text-center">
+                        <div class="text-3xl mb-2">🚪</div>
+                        <h3 class="font-semibold text-blue-900 mb-1">Check-in</h3>
+                        <p class="text-2xl font-bold text-blue-600">5</p>
+                        <p class="text-sm text-blue-600">Pets waiting</p>
+                    </div>
+                    <div class="bg-yellow-50 rounded-lg p-6 text-center">
+                        <div class="text-3xl mb-2">🛁</div>
+                        <h3 class="font-semibold text-yellow-900 mb-1">Bathing</h3>
+                        <p class="text-2xl font-bold text-yellow-600">3</p>
+                        <p class="text-sm text-yellow-600">In progress</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-6 text-center">
+                        <div class="text-3xl mb-2">✂️</div>
+                        <h3 class="font-semibold text-purple-900 mb-1">Grooming</h3>
+                        <p class="text-2xl font-bold text-purple-600">4</p>
+                        <p class="text-sm text-purple-600">Being groomed</p>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-6 text-center">
+                        <div class="text-3xl mb-2">✅</div>
+                        <h3 class="font-semibold text-green-900 mb-1">Ready</h3>
+                        <p class="text-2xl font-bold text-green-600">7</p>
+                        <p class="text-sm text-green-600">For pickup</p>
+                    </div>
+                </div>
+
+                <!-- Active Tasks Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pet Info</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Assigned</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RFID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="text-2xl mr-3">🐕</div>
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Buddy (Golden Retriever)</div>
+                                            <div class="text-sm text-gray-500">Owner: John Cruz</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Maria Santos</div>
+                                    <div class="text-sm text-gray-500">Senior Groomer</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                        Grooming
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-full bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="bg-purple-600 h-2 rounded-full" style="width: 75%"></div>
+                                        </div>
+                                        <span class="text-sm text-gray-600">75%</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">A1B2C3D4</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button class="text-primary hover:text-blue-700">Update Status</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="text-2xl mr-3">🐱</div>
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Whiskers (Persian Cat)</div>
+                                            <div class="text-sm text-gray-500">Owner: Ana Lopez</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">James Rodriguez</div>
+                                    <div class="text-sm text-gray-500">Grooming Specialist</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                        Bathing
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-full bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="bg-yellow-600 h-2 rounded-full" style="width: 40%"></div>
+                                        </div>
+                                        <span class="text-sm text-gray-600">40%</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">B2C3D4E5</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button class="text-primary hover:text-blue-700">Update Status</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="text-2xl mr-3">🐕</div>
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">Rocky (Beagle)</div>
+                                            <div class="text-sm text-gray-500">Owner: Mike Torres</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-500">Unassigned</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        Check-in
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-full bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 10%"></div>
+                                        </div>
+                                        <span class="text-sm text-gray-600">10%</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">E5F6G7H8</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button onclick="assignStaff('E5F6G7H8')" class="text-green-600 hover:text-green-700">Assign Staff</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- RFID Management Section -->
+        <section id="rfid-management" class="section hidden">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">📡 RFID Tag Management</h2>
+                
+                <!-- RFID Scanner Status -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl p-6 text-white">
+                        <h3 class="text-lg font-semibold mb-4">🔍 Scanner Status</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span>Entrance Scanner</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+                                    <span>Online</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Bathing Station</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+                                    <span>Online</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Grooming Station</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+                                    <span>Online</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Pickup Counter</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-red-300 rounded-full"></div>
+                                    <span>Offline</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">🏷️ Tag Inventory</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700">Total Tags</span>
+                                <span class="font-semibold">50</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700">Active (In Use)</span>
+                                <span class="font-semibold text-blue-600">12</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700">Available</span>
+                                <span class="font-semibold text-green-600">38</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700">Under Maintenance</span>
+                                <span class="font-semibold text-red-600">0</span>
+                            </div>
+                        </div>
+                        <button onclick="showTagManagement()" class="mt-4 w-full bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            Manage Tags
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent RFID Activity -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Recent RFID Activity</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <div>
+                                    <p class="font-medium text-green-900">Tag A1B2C3D4 - Status Update</p>
+                                    <p class="text-sm text-green-700">Buddy moved from Bathing → Grooming</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-green-600">2 min ago</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <div>
+                                    <p class="font-medium text-blue-900">Tag D4E5F6G7 - Check-in</p>
+                                    <p class="text-sm text-blue-700">Luna assigned to staff member</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-blue-600">5 min ago</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                <div>
+                                    <p class="font-medium text-purple-900">Tag B2C3D4E5 - Service Complete</p>
+                                    <p class="text-sm text-purple-700">Whiskers ready for pickup</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-purple-600">8 min ago</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                                <div>
+                                    <p class="font-medium text-yellow-900">Scanner Alert</p>
+                                    <p class="text-sm text-yellow-700">Pickup counter scanner offline</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-yellow-600">15 min ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Section -->
+        <section id="performance" class="section hidden">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">📈 Staff Performance Analytics</h2>
+                
+                <!-- Performance Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+                        <h3 class="text-lg font-semibold mb-4">⏱️ Average Service Time</h3>
+                        <div class="text-3xl font-bold mb-2">52 min</div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-green-300 text-sm">12% improvement</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white">
+                        <h3 class="text-lg font-semibold mb-4">📊 Completion Rate</h3>
+                        <div class="text-3xl font-bold mb-2">94.2%</div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-green-300 text-sm">2.1% improvement</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white">
+                        <h3 class="text-lg font-semibold mb-4">⭐ Customer Rating</h3>
+                        <div class="text-3xl font-bold mb-2">4.8/5</div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-green-300 text-sm">0.3 increase</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Individual Staff Performance -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">👥 Individual Staff Performance</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Member</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tasks Today</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quality Score</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Efficiency</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                                <span class="text-green-600 font-semibold text-sm">MS</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Maria Santos</div>
+                                                <div class="text-sm text-gray-500">Senior Groomer</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">7/8</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">48 min</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Excellent (9.2/10)
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">97%</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                                <span class="text-blue-600 font-semibold text-sm">JR</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">James Rodriguez</div>
+                                                <div class="text-sm text-gray-500">Grooming Specialist</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">5/9</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">52 min</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Good (8.5/10)
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">89%</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+                                                <span class="text-yellow-600 font-semibold text-sm">SJ</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">Sarah Johnson</div>
+                                                <div class="text-sm text-gray-500">Assistant Groomer</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">4/6</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">58 min</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Good (8.1/10)
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">85%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Task Assignment Modal -->
+    <div id="assignmentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Assign New Task</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pet (RFID: <span id="modalRfidTag"></span>)</label>
+                    <input type="text" id="modalPetName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Pet name">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Assign to Staff</label>
+                    <select id="modalStaffSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">Select Staff Member</option>
+                        <option value="maria">Maria Santos (Available)</option>
+                        <option value="james">James Rodriguez (Busy)</option>
+                        <option value="sarah">Sarah Johnson (On Break)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Service Type</label>
+                    <select id="modalServiceType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">Select Service</option>
+                        <option value="basic">Basic Bath</option>
+                        <option value="full">Full Grooming</option>
+                        <option value="premium">Premium Package</option>
+                        <option value="dental">Dental Care</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                    <select id="modalPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="normal">Normal</option>
+                        <option value="high">High Priority</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-between mt-6">
+                <button onclick="closeAssignmentModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                    Cancel
+                </button>
+                <button onclick="confirmAssignment()" class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    Assign Task
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+        }
+
+        function assignNewTask() {
+            document.getElementById('assignmentModal').classList.remove('hidden');
+        }
+
+        function assignStaff(rfidTag) {
+            document.getElementById('modalRfidTag').textContent = rfidTag;
+            document.getElementById('assignmentModal').classList.remove('hidden');
+        }
+
+        function closeAssignmentModal() {
+            document.getElementById('assignmentModal').classList.add('hidden');
+            // Clear form
+            document.getElementById('modalPetName').value = '';
+            document.getElementById('modalStaffSelect').value = '';
+            document.getElementById('modalServiceType').value = '';
+            document.getElementById('modalPriority').value = '';
+        }
+
+        function confirmAssignment() {
+            const petName = document.getElementById('modalPetName').value;
+            const staff = document.getElementById('modalStaffSelect').value;
+            const serviceType = document.getElementById('modalServiceType').value;
+            const priority = document.getElementById('modalPriority').value;
+            
+            if (!petName || !staff || !serviceType) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // In a real system, this would send the assignment to the server
+            alert(`Task assigned successfully!\n\nPet: ${petName}\nStaff: ${staff}\nService: ${serviceType}\nPriority: ${priority}`);
+            closeAssignmentModal();
+            
+            // Refresh the task monitoring view
+            showSection('task-monitoring');
+        }
+
+        function showTagManagement() {
+            alert('RFID Tag Management:\n\n• View all active tags\n• Assign/reassign tags to pets\n• Monitor tag battery status\n• Replace damaged tags\n• Generate tag usage reports');
+        }
+
+        function updateTaskStatus(rfidTag, newStatus) {
+            // In a real system, this would update the database
+            console.log(`Updating ${rfidTag} to status: ${newStatus}`);
+            alert(`Status updated for RFID ${rfidTag} to: ${newStatus}`);
+        }
+
+        // Simulate real-time updates
+        function simulateRealTimeUpdates() {
+            // Update progress bars and statuses randomly
+            const progressBars = document.querySelectorAll('[style*="width"]');
+            progressBars.forEach(bar => {
+                if (Math.random() > 0.95) { // 5% chance to update
+                    const currentWidth = parseInt(bar.style.width);
+                    const newWidth = Math.min(100, currentWidth + Math.floor(Math.random() * 10));
+                    bar.style.width = newWidth + '%';
+                }
+            });
+        }
+
+        // Simulate RFID scanner activity
+        function simulateRfidActivity() {
+            const activities = [
+                'Tag scanned at entrance',
+                'Pet moved to bathing station',
+                'Grooming process started',
+                'Service completed - ready for pickup',
+                'Scanner connectivity check'
+            ];
+            
+            if (Math.random() > 0.9) { // 10% chance every 5 seconds
+                const activity = activities[Math.floor(Math.random() * activities.length)];
+                console.log('RFID Activity:', activity);
+                
+                // In a real system, this would update the UI with new activity
+            }
+        }
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            // Show staff assignments by default
+            showSection('staff-assignments');
+            
+            // Start real-time simulations
+            setInterval(simulateRealTimeUpdates, 3000); // Every 3 seconds
+            setInterval(simulateRfidActivity, 5000);    // Every 5 seconds
+            
+            // Update timestamps
+            setInterval(() => {
+                const now = new Date();
+                const timeElements = document.querySelectorAll('[data-timestamp]');
+                timeElements.forEach(el => {
+                    // Update relative timestamps
+                    const timestamp = parseInt(el.dataset.timestamp);
+                    const diff = Math.floor((now - timestamp) / 60000); // minutes ago
+                    el.textContent = diff === 0 ? 'Just now' : `${diff} min ago`;
+                });
+            }, 60000); // Every minute
+        }
+
+        // Start the dashboard
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        showSection('staff-assignments');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        showSection('task-monitoring');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        showSection('rfid-management');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        showSection('performance');
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        assignNewTask();
+                        break;
+                }
+            }
+        });
+
+        // Add notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                type === 'warning' ? 'bg-yellow-500 text-black' :
+                'bg-blue-500 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Example notifications for demo
+        setTimeout(() => showNotification('New pet checked in: Max (Bulldog)', 'info'), 5000);
+        setTimeout(() => showNotification('Grooming completed for Luna', 'success'), 15000);
+        setTimeout(() => showNotification('Scanner offline at pickup counter', 'warning'), 25000);
+    </script>
+</body>
+</html>

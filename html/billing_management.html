@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare Pro - Billing Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#667eea',
+                        secondary: '#764ba2',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                   <div class="text-2xl">🐕</div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">8Paws Boutique & Grooming Salon</h1>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="check_in.html" class="text-gray-700 hover:text-primary transition-colors">Check-in</a>
+                    <a href="pet_tracking.html" class="text-gray-700 hover:text-primary transition-colors">Pet Tracking</a>
+                    <a href="customer_portal.html" class="text-gray-700 hover:text-primary transition-colors">Customer Portal</a>
+                    <a href="#" onclick="showSection('billing')" class="text-primary font-semibold">Billing</a>
+                </nav>
+
+                <!-- User Info -->
+                <div class="flex items-center space-x-4">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-medium text-gray-900">Sarah Johnson</p>
+                        <p class="text-xs text-gray-500">Billing Staff</p>
+                    </div>
+                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-medium">
+                        SJ
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Today's Revenue</p>
+                        <p class="text-2xl font-bold text-gray-900">₱8,450</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Pending Bills</p>
+                        <p class="text-2xl font-bold text-gray-900">7</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-yellow-100 rounded-lg">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Processing</p>
+                        <p class="text-2xl font-bold text-gray-900">3</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-purple-100 rounded-lg">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">This Week</p>
+                        <p class="text-2xl font-bold text-gray-900">₱42,350</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🚀 Quick Actions</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button onclick="showSection('rfid-billing')" class="p-4 bg-primary/10 rounded-lg text-center hover:bg-primary/20 transition-colors">
+                    <div class="text-2xl mb-2">📡</div>
+                    <p class="text-sm font-medium text-gray-900">RFID Billing</p>
+                </button>
+                <button onclick="showSection('pending-bills')" class="p-4 bg-yellow-100 rounded-lg text-center hover:bg-yellow-200 transition-colors">
+                    <div class="text-2xl mb-2">⏳</div>
+                    <p class="text-sm font-medium text-gray-900">Pending Bills</p>
+                </button>
+                <button onclick="showSection('payment-processing')" class="p-4 bg-green-100 rounded-lg text-center hover:bg-green-200 transition-colors">
+                    <div class="text-2xl mb-2">💳</div>
+                    <p class="text-sm font-medium text-gray-900">Process Payment</p>
+                </button>
+                <button onclick="generateReport()" class="p-4 bg-blue-100 rounded-lg text-center hover:bg-blue-200 transition-colors">
+                    <div class="text-2xl mb-2">📊</div>
+                    <p class="text-sm font-medium text-gray-900">Generate Report</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- RFID Billing Section -->
+        <section id="rfid-billing" class="section">
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">📡 RFID Tag Billing</h2>
+                
+                <!-- RFID Scanner -->
+                <div class="bg-gradient-to-r from-primary to-secondary rounded-xl p-6 text-white mb-6">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">📡</div>
+                        <h3 class="text-xl font-semibold mb-2" id="scannerStatus">Tap RFID Tag to Generate Bill</h3>
+                        <p class="mb-4" id="scannerMessage">Place tag near scanner</p>
+                        <div class="bg-white/20 rounded-lg p-4 inline-block">
+                            <p class="text-sm mb-1">Scanned Tag ID:</p>
+                            <p class="text-2xl font-mono font-bold" id="scannedTag">---</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual RFID Entry -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-blue-900 mb-3">Manual Entry</h4>
+                    <div class="flex space-x-3">
+                        <input type="text" id="manualRfidInput" placeholder="Enter RFID Tag ID" 
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <button onclick="processBilling()" class="bg-primary hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                            Generate Bill
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bill Generation Area -->
+                <div id="billGeneration" class="hidden">
+                    <div class="border-2 border-gray-200 rounded-xl p-6">
+                        <!-- Pet & Service Information -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-3">🐕 Pet Information</h4>
+                                <div class="space-y-2 text-sm">
+                                    <p><span class="font-medium">Pet Name:</span> <span id="billPetName">-</span></p>
+                                    <p><span class="font-medium">Breed:</span> <span id="billPetBreed">-</span></p>
+                                    <p><span class="font-medium">Owner:</span> <span id="billOwnerName">-</span></p>
+                                    <p><span class="font-medium">Phone:</span> <span id="billOwnerPhone">-</span></p>
+                                    <p><span class="font-medium">RFID Tag:</span> <span id="billRfidTag" class="font-mono">-</span></p>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-3">⏰ Service Timeline</h4>
+                                <div class="space-y-2 text-sm">
+                                    <p><span class="font-medium">Check-in:</span> <span id="billCheckinTime">-</span></p>
+                                    <p><span class="font-medium">Bathing:</span> <span id="billBathTime">-</span></p>
+                                    <p><span class="font-medium">Grooming:</span> <span id="billGroomingTime">-</span></p>
+                                    <p><span class="font-medium">Total Duration:</span> <span id="billDuration">-</span></p>
+                                    <p><span class="font-medium">Staff:</span> <span id="billStaff">-</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Services & Billing -->
+                        <div class="border-t pt-6">
+                            <h4 class="font-semibold text-gray-900 mb-4">🧾 Service Breakdown</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Service</th>
+                                            <th class="px-4 py-3 text-right text-sm font-medium text-gray-600">Base Price</th>
+                                            <th class="px-4 py-3 text-center text-sm font-medium text-gray-600">Size Modifier</th>
+                                            <th class="px-4 py-3 text-right text-sm font-medium text-gray-600">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="serviceBreakdown" class="divide-y divide-gray-200">
+                                        <!-- Services will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Bill Summary -->
+                            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Subtotal:</span>
+                                        <span id="billSubtotal">₱0</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span>Discount:</span>
+                                        <span class="text-green-600">-<span id="billDiscount">₱0</span></span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span>Tax (12%):</span>
+                                        <span id="billTax">₱0</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="flex justify-between text-lg font-bold">
+                                        <span>Total Amount:</span>
+                                        <span class="text-primary" id="billTotal">₱0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Discounts & Adjustments -->
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Apply Discount</label>
+                                    <select id="discountSelect" onchange="updateBillTotal()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option value="0">No Discount</option>
+                                        <option value="5">Senior/PWD (5%)</option>
+                                        <option value="10">Loyalty Customer (10%)</option>
+                                        <option value="15">First Time (15%)</option>
+                                        <option value="custom">Custom Amount</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Custom Discount (₱)</label>
+                                    <input type="number" id="customDiscount" placeholder="0" min="0" onchange="updateBillTotal()" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                                    <select id="paymentMethod" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option value="cash">Cash</option>
+                                        <option value="card">Credit/Debit Card</option>
+                                        <option value="gcash">GCash</option>
+                                        <option value="maya">Maya</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex justify-between mt-8">
+                                <div class="space-x-3">
+                                    <button onclick="saveDraft()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors">
+                                        Save Draft
+                                    </button>
+                                    <button onclick="printBill()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                        Print Bill
+                                    </button>
+                                </div>
+                                <button onclick="processPayment()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                                    Process Payment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pending Bills Section -->
+        <section id="pending-bills" class="section hidden">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">⏳ Pending Bills</h2>
+                    <div class="flex space-x-2">
+                        <button class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            Refresh
+                        </button>
+                        <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            Export
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Pending Bill 1 -->
+                    <div class="border border-orange-200 bg-orange-50 rounded-lg p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-xl">🐕</div>
+                                <div>
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <h3 class="font-semibold text-gray-900">Buddy - Full Grooming</h3>
+                                        <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-medium">Grooming Complete</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-1">Owner: John Cruz • RFID: B2C3D4E5</p>
+                                    <p class="text-sm text-gray-600">Services: Full Grooming Package, Nail Trim, De-shedding</p>
+                                    <p class="text-xs text-gray-500 mt-1">Completed: 11:30 AM • Duration: 1h 45m</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-gray-900">₱1,150</p>
+                                <div class="flex space-x-2 mt-2">
+                                    <button onclick="generateBillFromPending('B2C3D4E5')" class="bg-primary hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
+                                        Generate Bill
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Bill 2 -->
+                    <div class="border border-green-200 bg-green-50 rounded-lg p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl">🐱</div>
+                                <div>
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <h3 class="font-semibold text-gray-900">Whiskers - Basic Bath</h3>
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">Ready for Pickup</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-1">Owner: Ana Lopez • RFID: D4E5F6G7</p>
+                                    <p class="text-sm text-gray-600">Services: Basic Bath, Ear Cleaning, Nail Polish</p>
+                                    <p class="text-xs text-gray-500 mt-1">Completed: 10:45 AM • Duration: 45m</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-gray-900">₱600</p>
+                                <div class="flex space-x-2 mt-2">
+                                    <button onclick="generateBillFromPending('D4E5F6G7')" class="bg-primary hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
+                                        Generate Bill
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- More pending bills... -->
+                    <div class="border border-yellow-200 bg-yellow-50 rounded-lg p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 text-xl">🐕</div>
+                                <div>
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <h3 class="font-semibold text-gray-900">Rocky - Dental Care</h3>
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-medium">In Progress</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-1">Owner: Mike Torres • RFID: E5F6G7H8</p>
+                                    <p class="text-sm text-gray-600">Services: Basic Bath, Dental Care, Nail Trimming</p>
+                                    <p class="text-xs text-gray-500 mt-1">Started: 11:00 AM • Est. completion: 12:30 PM</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-gray-900">₱700</p>
+                                <div class="flex space-x-2 mt-2">
+                                    <button disabled class="bg-gray-300 text-gray-500 px-3 py-1 rounded text-sm font-medium cursor-not-allowed">
+                                        In Progress
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment Processing Section -->
+        <section id="payment-processing" class="section hidden">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">💳 Payment Processing</h2>
+                
+                <!-- Recent Payments -->
+                <div class="space-y-4">
+                    <div class="border border-green-200 bg-green-50 rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-green-800">Payment Successful</h3>
+                            <span class="text-xs text-green-600">2 minutes ago</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-sm text-green-700"><strong>Pet:</strong> Luna (Persian Cat)</p>
+                                <p class="text-sm text-green-700"><strong>Owner:</strong> Maria Santos</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-green-700"><strong>Method:</strong> GCash</p>
+                                <p class="text-sm text-green-700"><strong>Receipt:</strong> #GC20250810001</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-green-800">₱600</p>
+                                <button class="mt-1 text-green-600 hover:text-green-700 text-sm underline">View Receipt</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border border-blue-200 bg-blue-50 rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-blue-800">Processing Payment</h3>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                                <span class="text-xs text-blue-600">Processing...</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-sm text-blue-700"><strong>Pet:</strong> Buddy (Golden Retriever)</p>
+                                <p class="text-sm text-blue-700"><strong>Owner:</strong> John Cruz</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-blue-700"><strong>Method:</strong> Credit Card</p>
+                                <p class="text-sm text-blue-700"><strong>Card:</strong> **** **** **** 1234</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-blue-800">₱1,150</p>
+                                <button class="mt-1 text-blue-600 hover:text-blue-700 text-sm underline">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Summary -->
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-gray-50 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-4">💰 Today's Summary</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Cash Payments:</span>
+                                <span class="font-medium">₱3,200</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Card Payments:</span>
+                                <span class="font-medium">₱2,800</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">GCash/Maya:</span>
+                                <span class="font-medium">₱2,450</span>
+                            </div>
+                            <hr>
+                            <div class="flex justify-between text-lg font-bold">
+                                <span>Total:</span>
+                                <span class="text-primary">₱8,450</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 bg-gray-50 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-4">📊 Payment Methods</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                    <span class="text-sm text-gray-600">Cash</span>
+                                </div>
+                                <span class="font-medium">38%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 bg-blue-500 rounded"></div>
+                                    <span class="text-sm text-gray-600">Cards</span>
+                                </div>
+                                <span class="font-medium">33%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 bg-purple-500 rounded"></div>
+                                    <span class="text-sm text-gray-600">Digital</span>
+                                </div>
+                                <span class="font-medium">29%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Payment Successful!</h3>
+                <p class="text-gray-600 mb-6">Bill has been processed and receipt sent to customer.</p>
+                <button onclick="closeModal()" class="bg-primary hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for RFID tags and pets
+        const petData = {
+            'A1B2C3D4': {
+                petName: 'Buddy',
+                breed: 'Golden Retriever',
+                owner: 'John Cruz',
+                phone: '+63 912 345 6789',
+                checkinTime: '9:00 AM',
+                bathTime: '9:30 AM',
+                groomingTime: '10:30 AM',
+                staff: 'Maria Santos',
+                services: [
+                    { name: 'Basic Bath', basePrice: 300, modifier: 'Large (+50%)', amount: 450 },
+                    { name: 'Full Grooming', basePrice: 500, modifier: 'Large (+50%)', amount: 750 },
+                    { name: 'Nail Trimming', basePrice: 100, modifier: 'Standard', amount: 100 }
+                ]
+            },
+            'B2C3D4E5': {
+                petName: 'Whiskers',
+                breed: 'Persian Cat',
+                owner: 'Ana Lopez',
+                phone: '+63 917 234 5678',
+                checkinTime: '10:00 AM',
+                bathTime: '10:15 AM',
+                groomingTime: '10:45 AM',
+                staff: 'James Rodriguez',
+                services: [
+                    { name: 'Basic Bath', basePrice: 300, modifier: 'Small (-20%)', amount: 240 },
+                    { name: 'Ear Cleaning', basePrice: 150, modifier: 'Standard', amount: 150 },
+                    { name: 'Nail Polish', basePrice: 200, modifier: 'Standard', amount: 200 }
+                ]
+            },
+            'D4E5F6G7': {
+                petName: 'Luna',
+                breed: 'Shih Tzu',
+                owner: 'Maria Santos',
+                phone: '+63 905 123 4567',
+                checkinTime: '11:00 AM',
+                bathTime: '11:20 AM',
+                groomingTime: '12:00 PM',
+                staff: 'Sarah Johnson',
+                services: [
+                    { name: 'Premium Grooming', basePrice: 600, modifier: 'Medium (+20%)', amount: 720 },
+                    { name: 'De-shedding Treatment', basePrice: 250, modifier: 'Standard', amount: 250 }
+                ]
+            }
+        };
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+        }
+
+        function simulateRfidScan() {
+            const tags = Object.keys(petData);
+            const randomTag = tags[Math.floor(Math.random() * tags.length)];
+            
+            document.getElementById('scannedTag').textContent = randomTag;
+            document.getElementById('scannerStatus').textContent = 'Tag Detected!';
+            document.getElementById('scannerMessage').textContent = 'Processing...';
+            
+            setTimeout(() => {
+                processBilling(randomTag);
+            }, 1500);
+        }
+
+        function processBilling(tagId = null) {
+            const rfidTag = tagId || document.getElementById('manualRfidInput').value || document.getElementById('scannedTag').textContent;
+            
+            if (!rfidTag || rfidTag === '---') {
+                alert('Please enter or scan an RFID tag first.');
+                return;
+            }
+            
+            const pet = petData[rfidTag];
+            if (!pet) {
+                alert('RFID tag not found in system. Please check the tag ID.');
+                return;
+            }
+            
+            // Populate pet information
+            document.getElementById('billPetName').textContent = pet.petName;
+            document.getElementById('billPetBreed').textContent = pet.breed;
+            document.getElementById('billOwnerName').textContent = pet.owner;
+            document.getElementById('billOwnerPhone').textContent = pet.phone;
+            document.getElementById('billRfidTag').textContent = rfidTag;
+            document.getElementById('billCheckinTime').textContent = pet.checkinTime;
+            document.getElementById('billBathTime').textContent = pet.bathTime;
+            document.getElementById('billGroomingTime').textContent = pet.groomingTime;
+            document.getElementById('billStaff').textContent = pet.staff;
+            
+            // Calculate duration
+            const checkin = new Date(`2024-01-01 ${pet.checkinTime}`);
+            const grooming = new Date(`2024-01-01 ${pet.groomingTime}`);
+            const duration = Math.round((grooming - checkin) / (1000 * 60));
+            document.getElementById('billDuration').textContent = `${Math.floor(duration / 60)}h ${duration % 60}m`;
+            
+            // Populate services
+            const serviceTable = document.getElementById('serviceBreakdown');
+            serviceTable.innerHTML = '';
+            
+            let subtotal = 0;
+            pet.services.forEach(service => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-3 text-sm text-gray-900">${service.name}</td>
+                    <td class="px-4 py-3 text-sm text-gray-600 text-right">₱${service.basePrice}</td>
+                    <td class="px-4 py-3 text-sm text-gray-600 text-center">${service.modifier}</td>
+                    <td class="px-4 py-3 text-sm font-medium text-gray-900 text-right">₱${service.amount}</td>
+                `;
+                serviceTable.appendChild(row);
+                subtotal += service.amount;
+            });
+            
+            // Update billing totals
+            updateBillTotal(subtotal);
+            
+            // Show bill generation area
+            document.getElementById('billGeneration').classList.remove('hidden');
+            
+            // Scroll to bill
+            document.getElementById('billGeneration').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateBillTotal(baseSubtotal = null) {
+            let subtotal = baseSubtotal;
+            if (subtotal === null) {
+                // Calculate from existing services
+                subtotal = 0;
+                const serviceRows = document.querySelectorAll('#serviceBreakdown tr');
+                serviceRows.forEach(row => {
+                    const amountCell = row.cells[3];
+                    if (amountCell) {
+                        const amount = parseInt(amountCell.textContent.replace('₱', '').replace(',', ''));
+                        subtotal += amount;
+                    }
+                });
+            }
+            
+            // Calculate discount
+            let discount = 0;
+            const discountSelect = document.getElementById('discountSelect').value;
+            const customDiscount = parseInt(document.getElementById('customDiscount').value || '0');
+            
+            if (discountSelect === 'custom') {
+                discount = customDiscount;
+            } else {
+                const discountPercent = parseInt(discountSelect || '0');
+                discount = Math.round(subtotal * discountPercent / 100);
+            }
+            
+            const discountedSubtotal = subtotal - discount;
+            const tax = Math.round(discountedSubtotal * 0.12);
+            const total = discountedSubtotal + tax;
+            
+            // Update display
+            document.getElementById('billSubtotal').textContent = `₱${subtotal.toLocaleString()}`;
+            document.getElementById('billDiscount').textContent = `₱${discount.toLocaleString()}`;
+            document.getElementById('billTax').textContent = `₱${tax.toLocaleString()}`;
+            document.getElementById('billTotal').textContent = `₱${total.toLocaleString()}`;
+        }
+
+        function generateBillFromPending(rfidTag) {
+            showSection('rfid-billing');
+            setTimeout(() => {
+                processBilling(rfidTag);
+            }, 500);
+        }
+
+        function processPayment() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const total = document.getElementById('billTotal').textContent;
+            
+            // Simulate payment processing
+            document.getElementById('successModal').classList.remove('hidden');
+            
+            // In a real system, this would integrate with payment processors
+            console.log(`Processing ${total} payment via ${paymentMethod}`);
+        }
+
+        function printBill() {
+            window.print();
+        }
+
+        function saveDraft() {
+            alert('Bill draft saved successfully!');
+        }
+
+        function generateReport() {
+            alert('Generating billing report... This feature will export today\'s transactions.');
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            // Reset form
+            document.getElementById('billGeneration').classList.add('hidden');
+            document.getElementById('scannedTag').textContent = '---';
+            document.getElementById('manualRfidInput').value = '';
+        }
+
+        // Simulate RFID scanning every 10 seconds (for demo)
+        setInterval(() => {
+            if (Math.random() > 0.9) { // 10% chance every 10 seconds
+                simulateRfidScan();
+            }
+        }, 10000);
+
+        // Initialize with RFID billing section
+        showSection('rfid-billing');
+    </script>
+</body>
+</html>

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Pet Grooming Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #667eea;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Report Cards Grid */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .report-card h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0.25rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        /* Charts Container */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Data Table */
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-pending {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .container {
+                padding: 0 0.5rem;
+            }
+
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">🐕 8Paws Boutique & Grooming Salon</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html" onclick="showPage('dashboard')" class="nav-link">Dashboard</a></li>
+                    <li><a href="staff_dashboard.html" onclick="showPage('staff')" class="nav-link">Staff Management</a></li>
+                    <li><a href="reports.html" onclick="showPage('reports')" class="nav-link active">Reports</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>📊 Business Reports & Analytics</h1>
+            <p>Comprehensive insights into your pet grooming business performance</p>
+        </div>
+
+        <!-- KPI Dashboard -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-value" id="totalPets">156</div>
+                <div class="kpi-label">Total Pets Groomed</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="totalRevenue">₱45,280</div>
+                <div class="kpi-label">Monthly Revenue</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="avgServiceTime">2.5h</div>
+                <div class="kpi-label">Avg Service Time</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="customerSatisfaction">95%</div>
+                <div class="kpi-label">Customer Satisfaction</div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h3>📅 Report Filters</h3>
+            <div class="filter-row">
+                <div class="form-group">
+                    <label for="reportType">Report Type</label>
+                    <select id="reportType">
+                        <option value="daily">Daily Report</option>
+                        <option value="weekly">Weekly Report</option>
+                        <option value="monthly">Monthly Report</option>
+                        <option value="quarterly">Quarterly Report</option>
+                        <option value="yearly">Yearly Report</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dateFrom">From Date</label>
+                    <input type="date" id="dateFrom" value="2025-08-01">
+                </div>
+                <div class="form-group">
+                    <label for="dateTo">To Date</label>
+                    <input type="date" id="dateTo" value="2025-08-10">
+                </div>
+                <div class="form-group">
+                    <label for="serviceType">Service Type</label>
+                    <select id="serviceType">
+                        <option value="all">All Services</option>
+                        <option value="basic">Basic Grooming</option>
+                        <option value="premium">Premium Grooming</option>
+                        <option value="bath-only">Bath Only</option>
+                        <option value="nail-trim">Nail Trim</option>
+                    </select>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 1rem;">
+                <button class="btn btn-primary" onclick="generateReport()">📊 Generate Report</button>
+                <button class="btn btn-secondary" onclick="exportReport()">📥 Export PDF</button>
+                <button class="btn btn-success" onclick="exportExcel()">📈 Export Excel</button>
+            </div>
+        </div>
+
+        <!-- Report Cards Grid -->
+        <div class="reports-grid">
+            <!-- Financial Report Card -->
+            <div class="report-card">
+                <h3>💰 Financial Performance</h3>
+                <div class="chart-placeholder">
+                    Revenue Trend Chart
+                </div>
+                <div style="margin-top: 1rem;">
+                    <p><strong>Total Revenue:</strong> ₱45,280</p>
+                    <p><strong>Total Expenses:</strong> ₱12,450</p>
+                    <p><strong>Net Profit:</strong> ₱32,830</p>
+                    <p><strong>Profit Margin:</strong> 72.5%</p>
+                </div>
+            </div>
+
+            <!-- Service Analysis Card -->
+            <div class="report-card">
+                <h3>🛁 Service Analysis</h3>
+                <div class="chart-placeholder">
+                    Service Distribution Pie Chart
+                </div>
+                <div style="margin-top: 1rem;">
+                    <p><strong>Most Popular:</strong> Premium Grooming (45%)</p>
+                    <p><strong>Basic Grooming:</strong> 35%</p>
+                    <p><strong>Bath Only:</strong> 15%</p>
+                    <p><strong>Nail Trim:</strong> 5%</p>
+                </div>
+            </div>
+
+            <!-- Staff Performance Card -->
+            <div class="report-card">
+                <h3>👥 Staff Performance</h3>
+                <div class="chart-placeholder">
+                    Staff Performance Bar Chart
+                </div>
+                <div style="margin-top: 1rem;">
+                    <p><strong>Top Performer:</strong> Maria Santos (28 pets)</p>
+                    <p><strong>Average per Staff:</strong> 22 pets</p>
+                    <p><strong>Best Rating:</strong> 4.9/5.0</p>
+                    <p><strong>Total Staff Hours:</strong> 320 hrs</p>
+                </div>
+            </div>
+
+            <!-- Customer Insights Card -->
+            <div class="report-card">
+                <h3>🐕 Customer Insights</h3>
+                <div class="chart-placeholder">
+                    Customer Retention Line Chart
+                </div>
+                <div style="margin-top: 1rem;">
+                    <p><strong>New Customers:</strong> 25 this month</p>
+                    <p><strong>Returning Customers:</strong> 85%</p>
+                    <p><strong>Most Common Breed:</strong> Golden Retriever</p>
+                    <p><strong>Peak Hours:</strong> 10 AM - 2 PM</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Data Table -->
+        <div class="table-container">
+            <h3>📋 Detailed Transaction Report</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Pet Name</th>
+                        <th>Owner</th>
+                        <th>Service</th>
+                        <th>Staff</th>
+                        <th>Duration</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                    <tr>
+                        <td>2025-08-10</td>
+                        <td>Buddy</td>
+                        <td>John Smith</td>
+                        <td>Premium Grooming</td>
+                        <td>Maria Santos</td>
+                        <td>2.5 hrs</td>
+                        <td>₱1,500</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-08-10</td>
+                        <td>Luna</td>
+                        <td>Sarah Johnson</td>
+                        <td>Basic Grooming</td>
+                        <td>Carlos Rodriguez</td>
+                        <td>1.5 hrs</td>
+                        <td>₱800</td>
+                        <td><span class="status-badge status-in-progress">In Progress</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-08-09</td>
+                        <td>Max</td>
+                        <td>Mike Wilson</td>
+                        <td>Bath Only</td>
+                        <td>Ana Dela Cruz</td>
+                        <td>1 hr</td>
+                        <td>₱400</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-08-09</td>
+                        <td>Bella</td>
+                        <td>Lisa Brown</td>
+                        <td>Premium Grooming</td>
+                        <td>Maria Santos</td>
+                        <td>3 hrs</td>
+                        <td>₱1,800</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-08-08</td>
+                        <td>Charlie</td>
+                        <td>David Lee</td>
+                        <td>Nail Trim</td>
+                        <td>Carlos Rodriguez</td>
+                        <td>0.5 hrs</td>
+                        <td>₱200</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for demonstration
+        let reportData = [
+            {
+                date: '2025-08-10',
+                petName: 'Buddy',
+                owner: 'John Smith',
+                service: 'Premium Grooming',
+                staff: 'Maria Santos',
+                duration: '2.5 hrs',
+                amount: 1500,
+                status: 'completed'
+            },
+            {
+                date: '2025-08-10',
+                petName: 'Luna',
+                owner: 'Sarah Johnson',
+                service: 'Basic Grooming',
+                staff: 'Carlos Rodriguez',
+                duration: '1.5 hrs',
+                amount: 800,
+                status: 'in-progress'
+            },
+            {
+                date: '2025-08-09',
+                petName: 'Max',
+                owner: 'Mike Wilson',
+                service: 'Bath Only',
+                staff: 'Ana Dela Cruz',
+                duration: '1 hr',
+                amount: 400,
+                status: 'completed'
+            }
+        ];
+
+        // Generate Report Function
+        function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const serviceType = document.getElementById('serviceType').value;
+
+            console.log('Generating report:', {
+                type: reportType,
+                from: dateFrom,
+                to: dateTo,
+                service: serviceType
+            });
+
+            // Filter and update the table based on selections
+            updateReportTable();
+            updateKPIs();
+            
+            alert('Report generated successfully!');
+        }
+
+        // Update Report Table
+        function updateReportTable() {
+            const tableBody = document.getElementById('reportTableBody');
+            tableBody.innerHTML = '';
+
+            reportData.forEach(record => {
+                const row = document.createElement('tr');
+                const statusClass = `status-${record.status}`;
+                const statusText = record.status.charAt(0).toUpperCase() + record.status.slice(1).replace('-', ' ');
+
+                row.innerHTML = `
+                    <td>${record.date}</td>
+                    <td>${record.petName}</td>
+                    <td>${record.owner}</td>
+                    <td>${record.service}</td>
+                    <td>${record.staff}</td>
+                    <td>${record.duration}</td>
+                    <td>₱${record.amount.toLocaleString()}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Update KPIs
+        function updateKPIs() {
+            const totalRevenue = reportData.reduce((sum, record) => sum + record.amount, 0);
+            document.getElementById('totalRevenue').textContent = `₱${totalRevenue.toLocaleString()}`;
+            document.getElementById('totalPets').textContent = reportData.length;
+        }
+
+        // Export Functions
+        function exportReport() {
+            alert('Exporting report to PDF... (Feature to be implemented)');
+        }
+
+        function exportExcel() {
+            alert('Exporting report to Excel... (Feature to be implemented)');
+        }
+
+        // Real-time updates simulation
+        function simulateRealTimeUpdates() {
+            setInterval(() => {
+                // Update some KPIs with random variations
+                const currentRevenue = parseInt(document.getElementById('totalRevenue').textContent.replace('₱', '').replace(',', ''));
+                const variation = Math.floor(Math.random() * 1000) - 500;
+                document.getElementById('totalRevenue').textContent = `₱${(currentRevenue + variation).toLocaleString()}`;
+                
+                const satisfaction = (95 + (Math.random() - 0.5) * 4).toFixed(1);
+                document.getElementById('customerSatisfaction').textContent = `${satisfaction}%`;
+            }, 30000); // Update every 30 seconds
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateReportTable();
+            simulateRealTimeUpdates();
+        });
+    </script>
+</body>
+</html>

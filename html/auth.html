@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8Paws Pet Boutique & Grooming Salon - Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#667eea',
+                        secondary: '#764ba2',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                 <div class="flex items-center space-x-3">
+                    <img src="/8paws/8PAWS_LOGO.png" alt="8Paws Logo" class="h-16 w-16 object-contain">
+                    <div>
+                        <p class="text-sm text-primary font-medium">Sign In Portal</p>
+                        <p class="text-xs text-gray-500">Pet Grooming & Care Services</p>
+                    </div>
+                </div>
+                <div class="hidden sm:flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">📞 (02) 8123-4567</span>
+                    <span class="text-sm text-gray-600">📍 Quezon City</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Login Form -->
+        <div id="login-form" class="bg-white rounded-xl shadow-lg overflow-hidden max-w-2xl mx-auto">
+            <div class="px-6 py-8 sm:px-10">
+                <div class="text-center mb-8">
+                    <div class="text-4xl mb-4">🔐</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome Back!</h2>
+                    <p class="text-gray-600">Sign in to access your pet's grooming portal</p>
+                </div>
+
+                <form id="loginForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" id="loginEmail" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                               placeholder="your@email.com">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password *</label>
+                        <div class="relative">
+                            <input type="password" id="loginPassword" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors pr-12"
+                                   placeholder="Enter your password">
+                            <button type="button" onclick="togglePassword('loginPassword')" 
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-primary rounded">
+                            <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                        </label>
+                        <a href="#" onclick="showForgotPassword()" class="text-sm text-primary hover:text-blue-700">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="w-full bg-primary hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors">
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600">
+                        Don't have an account? 
+                        <a href="#" onclick="showSignupForm()" class="text-primary hover:text-blue-700 font-medium">Sign up here</a>
+                    </p>
+                </div>
+
+                <!-- Quick Access for Walk-ins -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <div class="text-center">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Walk-in Customer?</h3>
+                        <a href="check_in.html" class="inline-flex items-center px-4 py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-colors text-sm font-medium">
+                            <span class="mr-2">🚀</span>
+                            Quick Check-in (No Account Required)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sign Up Form -->
+<div id="signup-form" class="bg-white rounded-xl shadow-lg overflow-hidden max-w-2xl mx-auto hidden">
+            <div class="px-6 py-8 sm:px-10">
+                <div class="text-center mb-8">
+                    <div class="text-4xl mb-4">🎉</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Join 8Paws Family!</h2>
+                    <p class="text-gray-600">Create your account for easier booking and tracking</p>
+                </div>
+
+                <form id="signupForm" class="space-y-5">
+                <!-- Personal Information Section -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-4">📝 Personal Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                            <input type="text" id="firstName" required 
+                                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                placeholder="John">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                            <input type="text" id="lastName" required 
+                                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                placeholder="Doe">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                            <input type="tel" id="signupPhone" required 
+                                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                placeholder="09XX-XXX-XXXX">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" id="signupEmail" required 
+                            class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                            placeholder="john@email.com">
+                        <p class="text-xs text-gray-500 mt-1">We'll send you a verification email</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Address *</label>
+                        <textarea id="signupAddress" required 
+                                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-none"
+                                placeholder="Complete address (Street, Barangay, City)"
+                                rows="2"></textarea>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact Section -->
+                <div class="bg-red-50 p-4 rounded-lg">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-4">🚨 Emergency Contact Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact Person *</label>
+                            <input type="text" id="emergencyContactName" required 
+                                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                placeholder="Contact person's name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact Number *</label>
+                            <input type="tel" id="emergencyContactNo" required 
+                                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                placeholder="09XX-XXX-XXXX">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Section -->
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-4">🔐 Account Security</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password *</label>
+                            <div class="relative">
+                                <input type="password" id="signupPassword" required 
+                                    class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors pr-10"
+                                    placeholder="Create a strong password">
+                                <button type="button" onclick="togglePassword('signupPassword')" 
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div id="password-strength" class="mt-2 text-xs">
+                                <div class="flex space-x-1">
+                                    <div class="password-bar bg-gray-200 rounded-full h-1 flex-1"></div>
+                                    <div class="password-bar bg-gray-200 rounded-full h-1 flex-1"></div>
+                                    <div class="password-bar bg-gray-200 rounded-full h-1 flex-1"></div>
+                                    <div class="password-bar bg-gray-200 rounded-full h-1 flex-1"></div>
+                                </div>
+                                <p class="password-text text-gray-500 mt-1">Enter a password</p>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password *</label>
+                            <div class="relative">
+                                <input type="password" id="confirmPassword" required 
+                                    class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors pr-10"
+                                    placeholder="Confirm your password">
+                                <button type="button" onclick="togglePassword('confirmPassword')" 
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div id="password-match" class="mt-1 text-xs text-gray-500"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+                    <div class="space-y-3">
+                        <label class="flex items-start">
+                            <input type="checkbox" id="agreeTerms" required class="w-4 h-4 text-primary rounded mt-0.5">
+                            <span class="ml-3 text-sm text-gray-600">
+                                I agree to the <a href="#" class="text-primary hover:text-blue-700">Terms of Service</a> 
+                                and <a href="#" class="text-primary hover:text-blue-700">Privacy Policy</a>
+                            </span>
+                        </label>
+                    </div>
+
+                    <button type="submit" id="signupBtn" disabled class="w-full bg-gray-300 text-gray-500 py-3 rounded-lg font-medium cursor-not-allowed transition-colors">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600">
+                        Already have an account? 
+                        <a href="#" onclick="showLoginForm()" class="text-primary hover:text-blue-700 font-medium">Sign in here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Verification Form -->
+<div id="verification-form" class="bg-white rounded-xl shadow-lg overflow-hidden max-w-xl mx-auto hidden">
+            <div class="px-6 py-8 sm:px-10">
+                <div class="text-center mb-8">
+                    <div class="text-4xl mb-4">📧</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Check Your Email</h2>
+                    <p class="text-gray-600">We've sent a verification code to <span id="verificationEmail" class="font-semibold"></span></p>
+                </div>
+
+                <form id="verificationForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 text-center">Enter Verification Code</label>
+                        <div class="flex justify-center space-x-2">
+                            <input type="text" maxlength="1" class="verification-input w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-xl font-semibold" data-index="0">
+                            <input type="text" maxlength="1" class="verification-input w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-xl font-semibold" data-index="1">
+                            <input type="text" maxlength="1" class="verification-input w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-xl font-semibold" data-index="2">
+                            <input type="text" maxlength="1" class="verification-input w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-xl font-semibold" data-index="3">
+                            <input type="text" maxlength="1" class="verification-input w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-xl font-semibold" data-index="4">
+                            <input type="text" maxlength="1" class="verification-input w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-xl font-semibold" data-index="5">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="verifyBtn" disabled class="w-full bg-gray-300 text-gray-500 py-3 rounded-lg font-medium cursor-not-allowed transition-colors">
+                        Verify Email
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600">
+                        Didn't receive the code? 
+                        <button onclick="resendVerification()" class="text-primary hover:text-blue-700 font-medium" id="resendBtn">
+                            Resend Code
+                        </button>
+                    </p>
+                    <div id="resendTimer" class="text-xs text-gray-500 mt-2 hidden">
+                        You can resend in <span id="countdown">60</span> seconds
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <button onclick="showSignupForm()" class="text-sm text-gray-500 hover:text-gray-700">← Back to Sign Up</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forgot Password Form -->
+<div id="forgot-password-form" class="bg-white rounded-xl shadow-lg overflow-hidden max-w-xl mx-auto hidden">
+            <div class="px-6 py-8 sm:px-10">
+                <div class="text-center mb-8">
+                    <div class="text-4xl mb-4">🔑</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Reset Password</h2>
+                    <p class="text-gray-600">Enter your email to receive reset instructions</p>
+                </div>
+
+                <form id="forgotPasswordForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" id="resetEmail" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                               placeholder="your@email.com">
+                    </div>
+
+                    <button type="submit" class="w-full bg-primary hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors">
+                        Send Reset Instructions
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <button onclick="showLoginForm()" class="text-sm text-gray-500 hover:text-gray-700">← Back to Sign In</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center text-sm text-gray-500">
+                <p>&copy; 2025 8Paws Pet Boutique & Grooming Salon. Professional Pet Care Services.</p>
+                <p class="mt-2">📍 123 Pet Street, Quezon City | 📞 (02) 8123-4567 | 📧 info@8pawspetboutique.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+      
+    </script>
+
+    <script src="../js/auth.js"></script>
+
+</body>
+</html>
