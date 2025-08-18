@@ -519,236 +519,202 @@ function showNotification(message, type = 'info') {
     }, 4000);
 }
 
+
 function generatePDFReceipt() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
     
-    // Set background color (light gray)
-    doc.setFillColor(248, 249, 250);
-    doc.rect(0, 0, 210, 297, 'F');
+    // More accurate height calculation
+    let estimatedHeight = 35; // Header
+    estimatedHeight += 25; // Receipt title, date, separator
+    estimatedHeight += 15; // Booking details
+    estimatedHeight += 15; // Pet info (base)
+    estimatedHeight += (petData.petAge || petData.petSize ? 3 : 0); // Extra pet details
+    estimatedHeight += 12; // Owner info
+    estimatedHeight += 10; // Services header and separators
+    estimatedHeight += selectedServices.length * 3; // Each service
+    estimatedHeight += 15; // Subtotal and total sections
+    estimatedHeight += (petData.specialNotes && petData.specialNotes.trim() ? 12 : 0); // Special notes
+    estimatedHeight += 8; // Footer with minimal spacing
     
-    // Main content background (white)
-    doc.setFillColor(255, 255, 255);
-    doc.rect(15, 15, 180, 267, 'F');
+    // Minimal padding to reduce excess space
+    const finalHeight = Math.max(estimatedHeight - 25);
     
-    // Header with accent color - reduced height for better proportions
+    // ADAPTIVE RECEIPT SIZE - 80mm width, calculated height
+    const doc = new jsPDF({
+        unit: 'mm',
+        format: [80, finalHeight]
+    });
+    
+    let yPos = 5;
+    
+    // Header - Full width with proper centering
     doc.setFillColor(102, 126, 234);
-    doc.rect(15, 15, 180, 35, 'F');
+    doc.rect(0, 0, 80, 22, 'F'); // Slightly taller header
     
-    // Company name and details in white - reorganized header
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text('8PAWS PET BOUTIQUE & GROOMING SALON', 25, 28);
+    doc.text('8PAWS PET', 40, 6, { align: 'center' });
+    doc.text('BOUTIQUE & GROOMING SALON', 40, 10, { align: 'center' });
     
-    doc.setFontSize(9);
+    doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
-    doc.text('Professional Pet Care Services  |  123 Pet Street, Quezon City  |  (02) 8123-4567', 25, 43);
+    doc.text('123 Pet Street, Quezon City', 40, 15, { align: 'center' });
+    doc.text('(02) 8123-4567', 40, 19, { align: 'center' });
     
-    // Receipt title and date - moved closer to header
-    doc.setTextColor(51, 51, 51);
-    doc.setFontSize(16);
+    yPos = 27;
+    
+    // Receipt title
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.text('BOOKING RECEIPT', 25, 60);
+    doc.text('BOOKING RECEIPT', 40, yPos, { align: 'center' });
+    yPos += 5;
     
-    // Current date and time
+    // Date
     const currentDate = new Date();
     const dateStr = currentDate.toLocaleDateString('en-PH', { 
         year: 'numeric', 
-        month: 'long', 
+        month: 'short', 
         day: 'numeric' 
     });
     const timeStr = currentDate.toLocaleTimeString('en-PH', { 
         hour: '2-digit', 
-        minute: '2-digit'
+        minute: '2-digit',
+        hour12: true
     });
     
-    doc.setFontSize(10);
+    doc.setFontSize(6);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Generated: ${dateStr} at ${timeStr}`, 25, 67);
+    doc.text(`${dateStr} ${timeStr}`, 40, yPos, { align: 'center' });
+    yPos += 5;
     
-    let yPos = 78;
+    // Separator line
+    doc.setDrawColor(200, 200, 200);
+    doc.line(5, yPos, 75, yPos);
+    yPos += 3;
     
-    // Booking Information Box - reduced spacing
-    doc.setFillColor(246, 248, 250);
-    doc.rect(25, yPos, 160, 22, 'F');
-    
-    doc.setTextColor(51, 51, 51);
-    doc.setFontSize(11);
+    // Booking Details - Single line
+    doc.setFontSize(6);
     doc.setFont('helvetica', 'bold');
-    doc.text('BOOKING DETAILS', 30, yPos + 8);
-    
+    doc.text('BOOKING DETAILS', 5, yPos);
+    yPos += 3;
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`Booking ID: #${bookingId || 'N/A'}`, 30, yPos + 16);
-    doc.text(`RFID Tag: ${petData.rfidTag || 'N/A'}`, 120, yPos + 16);
+    doc.text(`ID: #${bookingId || 'N/A'} | RFID: ${petData.rfidTag || 'N/A'}`, 5, yPos);
+    yPos += 5;
     
-    yPos += 30;
-    
-    // Pet Information - reduced spacing
-    doc.setFillColor(240, 253, 244);
-    doc.rect(25, yPos, 160, 32, 'F');
-    
-    doc.setTextColor(34, 84, 61);
-    doc.setFontSize(11);
+    // Pet Info - Compact
     doc.setFont('helvetica', 'bold');
-    doc.text('PET INFORMATION', 30, yPos + 10);
-    
-    doc.setTextColor(51, 51, 51);
+    doc.text('PET INFO', 5, yPos);
+    yPos += 3;
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`Name: ${petData.petName || 'N/A'}`, 30, yPos + 18);
-    doc.text(`Type: ${petData.petType || 'N/A'}`, 30, yPos + 26);
-    doc.text(`Breed: ${petData.petBreed || 'N/A'}`, 120, yPos + 18);
-    
-    let petDetails = '';
-    if (petData.petAge) petDetails += `Age: ${petData.petAge}`;
-    if (petData.petSize) {
-        if (petDetails) petDetails += ' | ';
-        petDetails += `Size: ${petData.petSize}`;
+    doc.text(`${petData.petName || 'N/A'} (${petData.petType || 'N/A'})`, 5, yPos);
+    yPos += 3;
+    doc.text(`${petData.petBreed || 'N/A'}`, 5, yPos);
+    if (petData.petAge || petData.petSize) {
+        yPos += 3;
+        let details = '';
+        if (petData.petAge) details += petData.petAge;
+        if (petData.petSize) details += (details ? ', ' : '') + petData.petSize;
+        doc.text(details, 5, yPos);
     }
-    if (petDetails) {
-        doc.text(petDetails, 120, yPos + 26);
-    }
+    yPos += 5;
     
-    yPos += 40;
-    
-    // Owner Information - reduced spacing
-    doc.setFillColor(254, 249, 237);
-    doc.rect(25, yPos, 160, 24, 'F');
-    
-    doc.setTextColor(120, 83, 0);
-    doc.setFontSize(11);
+    // Owner Info - Compact
     doc.setFont('helvetica', 'bold');
-    doc.text('OWNER INFORMATION', 30, yPos + 10);
-    
-    doc.setTextColor(51, 51, 51);
+    doc.text('OWNER', 5, yPos);
+    yPos += 3;
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`${petData.ownerName || 'N/A'}`, 30, yPos + 18);
-    doc.text(`${petData.ownerPhone || 'N/A'} | ${petData.ownerEmail || 'N/A'}`, 30, yPos + 26);
+    doc.text(petData.ownerName || 'N/A', 5, yPos);
+    yPos += 3;
+    doc.text(petData.ownerPhone || 'N/A', 5, yPos);
+    yPos += 5;
     
-    yPos += 32;
+    // Separator line
+    doc.line(5, yPos, 75, yPos);
+    yPos += 3;
     
-    // Services Section
-    doc.setTextColor(51, 51, 51);
-    doc.setFontSize(11);
+    // Services Header
     doc.setFont('helvetica', 'bold');
-    doc.text('SERVICES AVAILED', 25, yPos);
+    doc.text('SERVICES', 5, yPos);
+    yPos += 4;
     
-    // Services table header
-    yPos += 8;
-    doc.setFillColor(248, 249, 250);
-    doc.rect(25, yPos, 160, 10, 'F');
-    
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text('SERVICE', 30, yPos + 7);
-    doc.text('AMOUNT', 155, yPos + 7);
-    
-    yPos += 12;
-    
-    // Services list with tighter spacing
+    // Services List - Very compact
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'normal');
     if (selectedServices.length > 0) {
-        doc.setFont('helvetica', 'normal');
         selectedServices.forEach((service, index) => {
-            // Alternate row colors
-            if (index % 2 === 0) {
-                doc.setFillColor(255, 255, 255);
-                doc.rect(25, yPos - 2, 160, 10, 'F');
+            // Service name (truncate if too long)
+            let serviceName = service.name;
+            if (serviceName.length > 20) {
+                serviceName = serviceName.substring(0, 20) + '...';
             }
-            
-            doc.setFontSize(10);
-            doc.text(service.name, 30, yPos + 5);
-            doc.text(`PHP ${service.price.toFixed(2)}`, 155, yPos + 5);
-            yPos += 10;
+            doc.text(serviceName, 5, yPos);
+            doc.text(`PHP ${service.price.toFixed(2)}`, 75, yPos, { align: 'right' });
+            yPos += 3;
         });
-        
-        // Subtotal section - moved above total
-        yPos += 4;
-        doc.setFillColor(248, 249, 250);
-        doc.rect(25, yPos, 160, 10, 'F');
-        
-        doc.setTextColor(51, 51, 51);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        doc.text('SUBTOTAL', 30, yPos + 7);
-        doc.text(`PHP ${totalAmount.toFixed(2)}`, 155, yPos + 7);
-        
-        yPos += 12;
-        
-        // Total section (highlighted)
-        doc.setFillColor(102, 126, 234);
-        doc.rect(25, yPos, 160, 14, 'F');
-        
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('TOTAL AMOUNT', 30, yPos + 9);
-        doc.text(`PHP ${totalAmount.toFixed(2)}`, 155, yPos + 9);
-        
-        yPos += 18;
-        
     } else {
-        doc.setFontSize(10);
-        doc.text('No services selected', 30, yPos + 6);
-        
-        // Still show total as 0
-        yPos += 16;
-        doc.setFillColor(102, 126, 234);
-        doc.rect(25, yPos, 160, 14, 'F');
-        
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('TOTAL AMOUNT', 30, yPos + 9);
-        doc.text('PHP 0.00', 155, yPos + 9);
-        
-        yPos += 18;
+        doc.text('No services selected', 5, yPos);
+        yPos += 3;
     }
     
-    // Special Notes (if any) - with space check
-    if (petData.specialNotes && petData.specialNotes.trim() && yPos < 230) {
-        doc.setTextColor(51, 51, 51);
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text('SPECIAL INSTRUCTIONS', 25, yPos);
-        
-        yPos += 6;
-        doc.setFillColor(252, 252, 252);
-        doc.rect(25, yPos, 160, 20, 'F');
-        
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'normal');
-        const splitNotes = doc.splitTextToSize(petData.specialNotes, 150);
-        doc.text(splitNotes, 30, yPos + 10);
-        yPos += 24;
-    }
+    yPos += 2;
     
-    // Footer - fixed at bottom with proper spacing from content
-    const footerY = Math.max(yPos + 10, 250); // Ensure minimum distance from content
+    // Separator line
+    doc.line(5, yPos, 75, yPos);
+    yPos += 3;
     
-    doc.setFillColor(248, 249, 250);
-    doc.rect(15, footerY, 180, 32, 'F');
-    
-    doc.setTextColor(102, 126, 234);
-    doc.setFontSize(12);
+    // Subtotal
     doc.setFont('helvetica', 'bold');
-    doc.text('Thank you for choosing 8Paws!', 25, footerY + 12);
+    doc.text('SUBTOTAL', 5, yPos);
+    doc.text(`PHP ${totalAmount.toFixed(2)}`, 75, yPos, { align: 'right' });
+    yPos += 4;
     
-    doc.setTextColor(107, 114, 128);
-    doc.setFontSize(9);
+    // Total - Highlighted
+    doc.setFillColor(102, 126, 234);
+    doc.rect(5, yPos - 2, 70, 6, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TOTAL', 7, yPos + 1);
+    doc.text(`PHP ${totalAmount.toFixed(2)}`, 73, yPos + 1, { align: 'right' });
+    yPos += 8;
+    
+    // Special Notes (if any)
+    if (petData.specialNotes && petData.specialNotes.trim()) {
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(6);
+        doc.setFont('helvetica', 'bold');
+        doc.text('NOTES:', 5, yPos);
+        yPos += 3;
+        doc.setFont('helvetica', 'normal');
+        const notes = doc.splitTextToSize(petData.specialNotes, 70);
+        doc.text(notes, 5, yPos);
+        yPos += notes.length * 3 + 3;
+    }
+    
+    // Minimal space before footer
+    yPos += 3;
+    
+    // Footer - Compact spacing
+    doc.setDrawColor(200, 200, 200);
+    doc.line(5, yPos, 75, yPos);
+    yPos += 5;
+    
+    // Ensure footer text is black and visible
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Thank you for choosing 8Paws!', 40, yPos, { align: 'center' });
+    yPos += 3;
     doc.setFont('helvetica', 'normal');
-    doc.text('Your pet is in good hands with our professional grooming team.', 25, footerY + 20);
-    doc.text('For inquiries or rebooking, please contact us at the number above.', 25, footerY + 27);
+    doc.text('Your pet is in good hands', 40, yPos, { align: 'center' });
     
-    // Save the PDF with a clean filename
+    // Save PDF
     const cleanPetName = (petData.petName || 'Pet').replace(/[^a-zA-Z0-9]/g, '');
-    const fileName = `8Paws_Receipt_${cleanPetName}_${currentDate.toISOString().slice(0, 10)}.pdf`;
+    const fileName = `8Paws_CompactReceipt_${cleanPetName}_${currentDate.toISOString().slice(0, 10)}.pdf`;
     doc.save(fileName);
 }
-
-
 
 // Handle form submission for step 1
 document.getElementById('petInfoForm').addEventListener('submit', function(e) {
