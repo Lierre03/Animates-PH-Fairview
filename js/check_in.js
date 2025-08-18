@@ -356,12 +356,18 @@ function handleRFIDDetection(rfidData) {
     const rfidStatus = document.getElementById('rfidStatus');
     const rfidMessage = document.getElementById('rfidMessage');
     const assignedTag = document.getElementById('assignedTag');
+    const pulseIndicator = document.querySelector('.flex.space-x-1'); // Select the pulse container
     
     if (rfidData.isFirstTap) {
         // First tap - assign RFID for check-in
         rfidStatus.textContent = 'RFID Card Detected!';
         rfidMessage.textContent = 'Card assigned successfully';
         assignedTag.textContent = rfidData.customUID;
+        
+        // Hide the pulse animation
+        if (pulseIndicator) {
+            pulseIndicator.style.display = 'none';
+        }
         
         // Store RFID data
         petData.rfidTag = rfidData.customUID;

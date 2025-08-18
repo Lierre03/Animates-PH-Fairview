@@ -222,3 +222,83 @@ function getPasswordResetEmailTemplate($firstName, $resetToken) {
 
 i want when i am done with the check in process, an email will be sent to the customer with details of their booking, but after one email has been sent (current code sents continuosly the email if they are not yet away from that part), so i want you to stop the continuos sent of the email, so that it will only send once, and if they are done with the check in process, it will not send again, but if they are not yet done with the check in process, it will not send again, so that it will only send once per booking, and if they are done with the check in process, it will not send again. also, i want the user to be able to click the three buttons:   Go to Customer Portal,                             Print Receipt, and                             New Booking
 . so i want when the user clicked the cutomer portal, go to the auth.html page, if the print receipt button is clicked, a picture of the receipt will be generated and the user can download it (the content is similar to the email), moreover, if the user clicks the new booking button, it will go back to the id="form-step-1" part of the form again
+
+
+
+
+
+
+
+
+Assigned Tag ID:
+
+
+  <div class="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-lg p-6 inline-block mb-6">
+                            <p class="text-sm text-gray-600 mb-2">Assigned Tag ID:</p>
+                            <p class="text-3xl font-mono font-bold text-primary" id="assignedTag"></p>
+                            <div class="flex justify-center mt-3">
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                                    <div class="w-2 h-2 bg-primary rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+                                    <div class="w-2 h-2 bg-primary rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                         <!-- Workflow Information -->
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-6">
+                        <div class="flex items-center mb-4">
+                            <svg class="w-6 h-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h4 class="font-semibold text-blue-900">What happens next?</h4>
+                        </div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-blue-300">
+                                        <i class="fas fa-check text-blue-600 text-lg"></i>
+                                    </div>
+                                    <p class="font-semibold text-blue-800">Check-in Complete</p>
+                                    <p class="text-blue-600">Step 1</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-blue-200">
+                                        <i class="fas fa-bath text-blue-500 text-lg"></i>
+                                    </div>
+                                    <p class="font-semibold text-blue-800">Bathing</p>
+                                    <p class="text-blue-600">Step 2</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-blue-200">
+                                        <i class="fas fa-scissors text-blue-500 text-lg"></i>
+                                    </div>
+                                    <p class="font-semibold text-blue-800">Grooming</p>
+                                    <p class="text-blue-600">Step 3</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-blue-200">
+                                        <i class="fas fa-user-check text-blue-500 text-lg"></i>
+                                    </div>
+                                    <p class="font-semibold text-blue-800">Ready for Pickup</p>
+                                    <p class="text-blue-600">Step 4</p>
+                                </div>
+                            </div>
+                        <div class="text-center mt-4 pt-4 border-t border-blue-200">
+                            <p class="text-blue-700 font-medium">You'll receive email updates at each stage!</p>
+                        </div>
+                    </div>
