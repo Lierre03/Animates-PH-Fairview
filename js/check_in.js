@@ -609,11 +609,8 @@ function showNotification(message, type = 'info') {
 }
 
 function openGuestTracker() {
-    if (petData.rfidTag) {
-        window.open(`guest_dashboard.html?token=${encodeURIComponent(petData.rfidTag)}`, '_blank');
-    } else {
-        showNotification('Tracking information not available', 'error');
-    }
+    // Always redirect to the tracking input page
+    window.open('guest_pet_tracker.html', '_blank');
 }
 
 function generatePDFReceipt() {
