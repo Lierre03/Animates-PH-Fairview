@@ -519,7 +519,6 @@ function showNotification(message, type = 'info') {
     }, 4000);
 }
 
-
 function generatePDFReceipt() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
