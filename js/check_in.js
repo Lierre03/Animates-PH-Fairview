@@ -391,13 +391,48 @@ function handleRFIDDetection(rfidData) {
     }
 }
 
+// Add this variable at the top with other global variables
+// Add this variable at the top with other global variables
+let isProcessingBooking = false;
+
 async function completeBooking() {
     if (!rfidAssigned || !petData.rfidTag) {
         showNotification('Please wait for RFID assignment before completing check-in', 'warning');
         return;
     }
     
+    // Prevent multiple clicks
+    if (isProcessingBooking) {
+        showNotification('Booking is already being processed, please wait...', 'info');
+        return;
+    }
+    
     try {
+        // Set processing state
+        isProcessingBooking = true;
+        
+        // Disable the button and show loading state
+        const completeBtn = document.getElementById('completeBtn');
+        const originalText = completeBtn.innerHTML;
+        completeBtn.disabled = true;
+        completeBtn.className = 'bg-gray-400 text-gray-600 px-8 py-3 rounded-lg font-medium cursor-not-allowed flex items-center';
+        completeBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Processing Booking...
+        `;
+        
+        // Also disable back button to prevent navigation during processing
+        const backBtn = document.querySelector('button[onclick="previousStep()"]');
+        if (backBtn) {
+            backBtn.disabled = true;
+            backBtn.className = 'bg-gray-200 text-gray-400 px-8 py-3 rounded-lg font-medium cursor-not-allowed border border-gray-300';
+        }
+        
+        showNotification('Creating booking and sending confirmation email...', 'info');
+        
         const bookingData = {
             petName: petData.petName,
             petType: petData.petType,
@@ -410,7 +445,7 @@ async function completeBooking() {
             specialNotes: petData.specialNotes,
             services: selectedServices,
             totalAmount: parseFloat(totalAmount.toFixed(2)),
-            customRFID: petData.rfidTag // Use MySQL RFID
+            customRFID: petData.rfidTag
         };
 
         const response = await fetch(API_BASE + 'check_in.php', {
@@ -423,7 +458,7 @@ async function completeBooking() {
 
         const result = await response.json();
 
-        if (result.success) {
+          if (result.success) {
             bookingId = result.booking_id;
             
             // Show success message
@@ -431,14 +466,39 @@ async function completeBooking() {
             document.getElementById('finalBookingId').textContent = bookingId;
             goToStep('success');
             
-            showNotification('Check-in completed successfully!', 'success');
+            // Show different notification based on email status
+            if (result.email_sent && result.tracking_email_sent) {
+                showNotification('Check-in completed! Confirmation and tracking emails sent.', 'success');
+            } else if (result.email_sent || result.tracking_email_sent) {
+                showNotification('Check-in completed! Some email notifications sent.', 'warning');
+            } else {
+                showNotification('Check-in completed! (Email notifications failed)', 'warning');
+            }
             
         } else {
             throw new Error(result.error || 'Failed to create booking');
         }
+        
     } catch (error) {
         console.error('Error creating booking:', error);
         showNotification('Error creating booking: ' + error.message, 'error');
+        
+        // Reset button state on error
+        const completeBtn = document.getElementById('completeBtn');
+        completeBtn.disabled = false;
+        completeBtn.className = 'bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-colors';
+        completeBtn.innerHTML = 'Complete Check-in';
+        
+        // Re-enable back button
+        const backBtn = document.querySelector('button[onclick="previousStep()"]');
+        if (backBtn) {
+            backBtn.disabled = false;
+            backBtn.className = 'inline-flex items-center px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-all duration-200 border border-gray-300';
+        }
+        
+    } finally {
+        // Always reset processing state
+        isProcessingBooking = false;
     }
 }
 
@@ -496,8 +556,14 @@ function startNewBooking() {
     goToStep(1);
 }
 
-// Notification system
+// Update the existing showNotification function
 function showNotification(message, type = 'info') {
+    // Remove any existing processing notifications to avoid spam
+    if (type === 'info' && message.includes('Processing') || message.includes('Creating booking')) {
+        const existingNotifications = document.querySelectorAll('.notification-processing');
+        existingNotifications.forEach(notif => notif.remove());
+    }
+    
     const notification = document.createElement('div');
     const colors = {
         success: 'bg-green-500',
@@ -506,8 +572,24 @@ function showNotification(message, type = 'info') {
         info: 'bg-blue-500'
     };
     
-    notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
-    notification.textContent = message;
+    const icons = {
+        success: '✓',
+        error: '✕',
+        warning: '⚠',
+        info: 'ℹ'
+    };
+    
+    notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300 flex items-center notification-${type}`;
+    
+    // Add processing class for processing notifications
+    if (message.includes('Processing') || message.includes('Creating booking')) {
+        notification.classList.add('notification-processing');
+    }
+    
+    notification.innerHTML = `
+        <span class="mr-2 text-lg">${icons[type]}</span>
+        <span>${message}</span>
+    `;
     
     document.body.appendChild(notification);
     
@@ -516,15 +598,23 @@ function showNotification(message, type = 'info') {
         notification.classList.remove('translate-x-full');
     }, 100);
     
-    // Remove after 4 seconds
+    // Remove after appropriate time (longer for processing messages)
+    const duration = message.includes('Processing') || message.includes('Creating booking') ? 8000 : 4000;
     setTimeout(() => {
         notification.classList.add('translate-x-full');
         setTimeout(() => {
             notification.remove();
         }, 300);
-    }, 4000);
+    }, duration);
 }
 
+function openGuestTracker() {
+    if (petData.rfidTag) {
+        window.open(`guest_dashboard.html?token=${encodeURIComponent(petData.rfidTag)}`, '_blank');
+    } else {
+        showNotification('Tracking information not available', 'error');
+    }
+}
 
 function generatePDFReceipt() {
     const { jsPDF } = window.jspdf;
@@ -750,6 +840,3 @@ document.getElementById('ownerPhone').addEventListener('input', function(e) {
 window.addEventListener('beforeunload', function() {
     stopRFIDPolling();
 });
-
-
-

@@ -42,6 +42,11 @@ function testEmailConfig() {
  */
 function sendBookingConfirmationEmail($bookingId) {
     try {
+        // Test SMTP configuration first (optional but recommended)
+        if (!testEmailConfig()) {
+            error_log("SMTP configuration test failed - proceeding anyway");
+        }
+        
         $db = getDB();
         
         // Get booking details with all required information
@@ -69,8 +74,14 @@ function sendBookingConfirmationEmail($bookingId) {
         $stmt->execute([$bookingId]);
         $booking = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        if (!$booking || !$booking['owner_email']) {
-            throw new Exception('Booking not found or no email address');
+        if (!$booking) {
+            error_log("Booking not found for ID: $bookingId");
+            return false;
+        }
+        
+        if (!$booking['owner_email']) {
+            error_log("No email address found for booking ID: $bookingId");
+            return false;
         }
         
         // Send email
@@ -92,6 +103,7 @@ function sendBookingConfirmationEmail($bookingId) {
         $mail->Body = getBookingConfirmationEmailTemplate($booking);
         
         $mail->send();
+        error_log("Booking confirmation email sent successfully to: " . $booking['owner_email']);
         return true;
         
     } catch (Exception $e) {
