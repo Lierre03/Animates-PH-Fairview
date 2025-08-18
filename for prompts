@@ -1,0 +1,224 @@
+MariaDB [8paws]> select * from pets where id = 10;
++----+-------------+--------+------+----------+--------+-----------+--------+---------------+---------------------+---------------------+
+| id | customer_id | name   | type | pet_type | breed  | age_range | size   | special_notes | created_at          | updated_at          |
++----+-------------+--------+------+----------+--------+-----------+--------+---------------+---------------------+---------------------+
+| 10 |           3 | bianca | cat  | NULL     | Aegean | puppy     | medium |               | 2025-08-17 00:50:29 | 2025-08-17 00:50:29 |
++----+-------------+--------+------+----------+--------+-----------+--------+---------------+---------------------+---------------------+
+1 row in set (0.000 sec)
+
+MariaDB [8paws]> select * from bookings where id = 4;
++----+--------+-------------+-------------+--------------+------------+---------------------+----------------------+-------------------+-------------+---------------------+---------------------+---------+--------------+
+| id | pet_id | rfid_tag_id | custom_rfid | total_amount | status     | check_in_time       | estimated_completion | actual_completion | staff_notes | created_at          | updated_at          | user_id | booking_type |
++----+--------+-------------+-------------+--------------+------------+---------------------+----------------------+-------------------+-------------+---------------------+---------------------+---------+--------------+
+|  4 |      4 |           4 | D4E5F6G7    |       500.00 | checked-in | 2025-08-16 18:52:17 | 2025-08-16 20:52:17  | NULL              | NULL        | 2025-08-16 18:52:17 | 2025-08-17 02:40:49 |    NULL | walk_in      |
++----+--------+-------------+-------------+--------------+------------+---------------------+----------------------+-------------------+-------------+---------------------+---------------------+---------+--------------+
+1 row in set (0.000 sec)
+
+MariaDB [8paws]> select * from rfid_Cards where id = 13;
++----+-------------+------------+-----------------+-----------+----------+---------------------+---------------------+-----------+--------------------+--------------------+--------------------+--------+
+| id | card_uid    | custom_uid | firebase_doc_id | tap_count | max_taps | created_at          | updated_at          | is_active | last_firebase_sync | validation_time_ms | device_source      | status |
++----+-------------+------------+-----------------+-----------+----------+---------------------+---------------------+-----------+--------------------+--------------------+--------------------+--------+
+| 13 | 22:b0:8f:c3 | USBG17F5   | NULL            |         4 |        4 | 2025-08-17 13:22:43 | 2025-08-17 13:22:43 |         1 | NULL               |               3000 | ESP32-RFID-Scanner | active |
++----+-------------+------------+-----------------+-----------+----------+---------------------+---------------------+-----------+--------------------+--------------------+--------------------+--------+
+1 row in set (0.000 sec)
+
+MariaDB [8paws]> select * from customers where id = 4;
++----+---------------------------+---------------+------------------+---------+-------------------+---------------------+---------------------+---------+-------------+
+| id | name                      | phone         | email            | address | emergency_contact | created_at          | updated_at          | user_id | created_via |
++----+---------------------------+---------------+------------------+---------+-------------------+---------------------+---------------------+---------+-------------+
+|  4 | Bryant Iverson C. Melliza | 0939-817-0375 | brybry@gmail.com | NULL    | NULL              | 2025-08-16 21:36:52 | 2025-08-16 21:36:52 |    NULL | walk_in     |
++----+---------------------------+---------------+------------------+---------+-------------------+---------------------+---------------------+---------+-------------+
+1 row in set (0.000 sec)
+
+
+
+
+
+> the email of the customer, the content of the whole form will be sent to him including the status of the card_rfid assigned to his/her pet
+use this : require_once '../vendor/autoload.php'; // For PHPMailer
+
+> the contents of the email will be from the form-step-1 form-step-2 form-step-3, but do not include everything, only the following:
+- pet name, pet type, pet breed, pet age, owner name, phone number, the grooming service selected with its total cost (with decimals), the rfid tag assigned to the pet, and the status of the rfid tag (on this part check the table status_updates and under the field booking_id which is a foreign key to the bookings table from field "id", so from that table check the rfid_tag_id it is foreign key connected to the rfid_cards table and inside that table you check the field "tap_count", if the tap_count = 1, going back to the table status_updates field "status", it should be checked-in, but if the tap_count is 2, the status (from table status_updates) must be bathing; and tap_count = 3, the status must be grooming, and tap_count = 4, the status must be checked-out.) and whenever the status and tap_count changes it should email the user!!!
+make this as a basis for the format of the email to be sent to the user
+
+// Email Functions (unchanged)
+function sendVerificationEmail($email, $firstName, $verificationCode) {
+    $mail = new PHPMailer(true);
+    
+    try {
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = '8pawspetboutique@gmail.com';
+        $mail->Password   = 'ofvcexgxpmmzoond';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+        
+        $mail->setFrom('8pawspetboutique@gmail.com', '8Paws Pet Boutique');
+        $mail->addAddress($email, $firstName);
+        
+        $mail->isHTML(true);
+        $mail->Subject = 'Verify Your Email - 8Paws Pet Boutique';
+        $mail->Body = getVerificationEmailTemplate($firstName, $verificationCode);
+        
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Email could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        throw new Exception('Failed to send verification email');
+    }
+}
+
+function sendPasswordResetEmail($email, $firstName, $resetToken) {
+    $mail = new PHPMailer(true);
+    
+    try {
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = '8pawspetboutique@gmail.com'; // Fixed email address
+        $mail->Password   = 'ofvcexgxpmmzoond';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+        
+        $mail->setFrom('8pawspetboutique@gmail.com', '8Paws Pet Boutique');
+        $mail->addAddress($email, $firstName);
+        
+        $mail->isHTML(true);
+        $mail->Subject = 'Reset Your Password - 8Paws Pet Boutique';
+        $mail->Body = getPasswordResetEmailTemplate($firstName, $resetToken);
+        
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Email could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        throw new Exception('Failed to send password reset email');
+    }
+}
+
+function getVerificationEmailTemplate($firstName, $verificationCode) {
+    return "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Email Verification</title>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .code-box { background: #f8f9fa; border: 2px dashed #667eea; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px; }
+            .code { font-size: 32px; font-weight: bold; color: #667eea; font-family: monospace; letter-spacing: 8px; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+            .button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>
+                <h1>🐾 Welcome to 8Paws Pet Boutique!</h1>
+                <p>Professional Pet Grooming & Care Services</p>
+            </div>
+            <div class='content'>
+                <h2>Hi $firstName!</h2>
+                <p>Thank you for creating your account with 8Paws Pet Boutique. To complete your registration and start booking appointments for your furry friends, please verify your email address.</p>
+                
+                <div class='code-box'>
+                    <p style='margin: 0 0 10px 0; font-weight: bold;'>Your Verification Code:</p>
+                    <div class='code'>$verificationCode</div>
+                </div>
+                
+                <p>Enter this code on the verification page to activate your account. This code will expire in 30 minutes.</p>
+                
+                <p>Once verified, you'll be able to:</p>
+                <ul>
+                    <li>📅 Book grooming appointments online</li>
+                    <li>📱 Track your pet's grooming progress in real-time</li>
+                    <li>📋 View service history and receipts</li>
+                    <li>🔔 Receive email updates and reminders</li>
+                </ul>
+                
+                <p>If you didn't create this account, you can safely ignore this email.</p>
+                
+                <p>Welcome to the 8Paws family!</p>
+                
+                <p>Best regards,<br>
+                The 8Paws Pet Boutique Team</p>
+            </div>
+            <div class='footer'>
+                <p>8Paws Pet Boutique & Grooming Salon<br>
+                📍 123 Pet Street, Quezon City | 📞 (02) 8123-4567<br>
+                📧 info@8pawspetboutique.com</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ";
+}
+
+function getPasswordResetEmailTemplate($firstName, $resetToken) {
+    $resetUrl = "http://localhost/8paws/reset_password.html?token=" . $resetToken;
+    
+    return "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Password Reset</title>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .button { display: inline-block; background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+            .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; border-radius: 6px; margin: 15px 0; }
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>
+                <h1>🔑 Password Reset Request</h1>
+                <p>8Paws Pet Boutique & Grooming Salon</p>
+            </div>
+            <div class='content'>
+                <h2>Hi $firstName,</h2>
+                <p>We received a request to reset the password for your 8Paws Pet Boutique account.</p>
+                
+                <p>If you requested this password reset, click the button below to set a new password:</p>
+                
+                <div style='text-align: center;'>
+                    <a href='$resetUrl' class='button'>Reset My Password</a>
+                </div>
+                
+                <p>This link will expire in 1 hour for security reasons.</p>
+                
+                <div class='warning'>
+                    <strong>⚠️ Security Notice:</strong><br>
+                    If you didn't request this password reset, please ignore this email. Your account remains secure.
+                </div>
+                
+                <p>For security reasons, this link can only be used once. If you need another reset link, please visit our login page and request a new one.</p>
+                
+                <p>If you're having trouble with the button above, copy and paste this link into your browser:</p>
+                <p style='word-break: break-all; color: #667eea;'>$resetUrl</p>
+                
+                <p>Best regards,<br>
+                The 8Paws Pet Boutique Team</p>
+            </div>
+            <div class='footer'>
+                <p>8Paws Pet Boutique & Grooming Salon<br>
+                📍 123 Pet Street, Quezon City | 📞 (02) 8123-4567<br>
+                📧 info@8pawspetboutique.com</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ";
+}
+
+
+
+i want when i am done with the check in process, an email will be sent to the customer with details of their booking, but after one email has been sent (current code sents continuosly the email if they are not yet away from that part), so i want you to stop the continuos sent of the email, so that it will only send once, and if they are done with the check in process, it will not send again, but if they are not yet done with the check in process, it will not send again, so that it will only send once per booking, and if they are done with the check in process, it will not send again. also, i want the user to be able to click the three buttons:   Go to Customer Portal,                             Print Receipt, and                             New Booking
+. so i want when the user clicked the cutomer portal, go to the auth.html page, if the print receipt button is clicked, a picture of the receipt will be generated and the user can download it (the content is similar to the email), moreover, if the user clicks the new booking button, it will go back to the id="form-step-1" part of the form again

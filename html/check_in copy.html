@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8Paws Pet Boutique & Grooming Salon - Customer Check-in</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#667eea',
+                        secondary: '#764ba2',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .rfid-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+        
+        .rfid-waiting {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            background-size: 200% 200%;
+            animation: gradient 3s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <img src="/8paws/8PAWS_LOGO.png" alt="8Paws Logo" class="h-16 w-16 object-contain">
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">8Paws Pet Boutique</h1>
+                        <p class="text-sm text-primary font-medium">Customer Check-in Portal</p>
+                        <p class="text-xs text-gray-500">Pet Grooming & Care Services</p>
+                    </div>
+                </div>
+                <div class="hidden sm:flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">📞 (02) 8123-4567</span>
+                    <span class="text-sm text-gray-600">📍 Quezon City</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Progress Indicator -->
+        <div class="mb-8">
+            <div class="flex items-center justify-center">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-medium" id="step1">1</div>
+                        <span class="ml-2 text-sm font-medium text-gray-900" id="step1-text">Pet Information</span>
+                    </div>
+                    <div class="w-16 h-0.5 bg-gray-300" id="progress1"></div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-500 text-sm font-medium" id="step2">2</div>
+                        <span class="ml-2 text-sm font-medium text-gray-500" id="step2-text">Services</span>
+                    </div>
+                    <div class="w-16 h-0.5 bg-gray-300" id="progress2"></div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-500 text-sm font-medium" id="step3">3</div>
+                        <span class="ml-2 text-sm font-medium text-gray-500" id="step3-text">RFID Assignment</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Step 1: Pet Information -->
+            <div id="form-step-1" class="form-step">
+                <div class="px-6 py-8 sm:px-10">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome to 8Paws Pet Boutique!</h2>
+                        <p class="text-gray-600">Let's start by getting to know your furry friend</p>
+                    </div>
+
+                    <form id="petInfoForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Pet Name *</label>
+                                <input type="text" id="petName" required 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                       placeholder="e.g., Buddy">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Pet Type *</label>
+                                <select id="petType" required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                                    <option value="">Select pet type</option>
+                                    <option value="dog">Dog</option>
+                                    <option value="cat">Cat</option>
+                                    <option value="others">Others</option>
+                                </select>
+
+                                <!-- Custom Pet Type Input -->
+                                <div id="customPetTypeContainer" class="hidden mt-3">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Specify Pet Type *</label>
+                                    <input type="text" id="customPetType" 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                        placeholder="Enter pet type manually">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Pet Breed *</label>
+                                <select id="petBreed" required 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                        disabled>
+                                    <option value="">First select pet type</option>
+                                </select>
+                                <input type="text" id="petBreedCustom" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors hidden"
+                                       placeholder="Enter pet breed manually">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Pet Age</label>
+                                <select id="petAge" 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                                    <option value="">Select age range</option>
+                                    <option value="young">Young (0-1 year)</option>
+                                    <option value="juvenile">Juvenile (1-3 years)</option>
+                                    <option value="adult">Adult (3-7 years)</option>
+                                    <option value="senior">Senior (7+ years)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pet Size</label>
+                            <select id="petSize" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                                <option value="">Select size</option>
+                                <option value="small">Small (0-25 lbs)</option>
+                                <option value="medium">Medium (25-60 lbs)</option>
+                                <option value="large">Large (60-90 lbs)</option>
+                                <option value="xlarge">Extra Large (90+ lbs)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Owner Name *</label>
+                            <input type="text" id="ownerName" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                   placeholder="Your full name">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                                <input type="tel" id="ownerPhone" required 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                       placeholder="09XX-XXX-XXXX">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                                <input type="email" id="ownerEmail" required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                       placeholder="your@email.com">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Special Instructions or Medical Conditions</label>
+                            <textarea id="specialNotes" rows="3" 
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                                      placeholder="Any special care instructions, allergies, or behavioral notes..."></textarea>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-primary hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                                Next: Select Services
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Step 2: Service Selection -->
+            <div id="form-step-2" class="form-step hidden">
+                <div class="px-6 py-8 sm:px-10">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Select Grooming Services</h2>
+                        <p class="text-gray-600">Choose the services your pet needs today</p>
+                    </div>
+
+                    <div class="space-y-4 mb-8">
+                        <!-- Basic Services -->
+                        <div class="border rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">🛁 Basic Services</h3>
+                            <div class="space-y-3">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary" data-price="300" data-service="Basic Bath">
+                                    <div class="ml-3 flex-1 flex justify-between items-center">
+                                        <div>
+                                            <span class="font-medium">Basic Bath</span>
+                                            <p class="text-sm text-gray-500">Shampoo, rinse, and basic dry</p>
+                                        </div>
+                                        <span class="text-lg font-semibold text-primary">₱300.00</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary" data-price="150" data-service="Nail Trimming">
+                                    <div class="ml-3 flex-1 flex justify-between items-center">
+                                        <div>
+                                            <span class="font-medium">Nail Trimming</span>
+                                            <p class="text-sm text-gray-500">Professional nail care</p>
+                                        </div>
+                                        <span class="text-lg font-semibold text-primary">₱150.00</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary" data-price="200" data-service="Ear Cleaning">
+                                    <div class="ml-3 flex-1 flex justify-between items-center">
+                                        <div>
+                                            <span class="font-medium">Ear Cleaning</span>
+                                            <p class="text-sm text-gray-500">Safe ear cleaning and inspection</p>
+                                        </div>
+                                        <span class="text-lg font-semibold text-primary">₱200.00</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Premium Services -->
+                        <div class="border rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">✨ Premium Services</h3>
+                            <div class="space-y-3">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary" data-price="600" data-service="Full Grooming Package">
+                                    <div class="ml-3 flex-1 flex justify-between items-center">
+                                        <div>
+                                            <span class="font-medium">Full Grooming Package</span>
+                                            <p class="text-sm text-gray-500">Bath, cut, style, nails, ears, and teeth</p>
+                                        </div>
+                                        <span class="text-lg font-semibold text-primary">₱600.00</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary" data-price="250" data-service="Dental Care">
+                                    <div class="ml-3 flex-1 flex justify-between items-center">
+                                        <div>
+                                            <span class="font-medium">Dental Care</span>
+                                            <p class="text-sm text-gray-500">Teeth cleaning and oral health check</p>
+                                        </div>
+                                        <span class="text-lg font-semibold text-primary">₱250.00</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary" data-price="400" data-service="De-shedding Treatment">
+                                    <div class="ml-3 flex-1 flex justify-between items-center">
+                                        <div>
+                                            <span class="font-medium">De-shedding Treatment</span>
+                                            <p class="text-sm text-gray-500">Reduces shedding up to 90%</p>
+                                        </div>
+                                        <span class="text-lg font-semibold text-primary">₱400.00</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Add-ons -->
+                        <div class="border rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">🎀 Add-ons</h3>
+                            <div class="space-y-3">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary" data-price="100" data-service="Nail Polish">
+                                    <div class="ml-3 flex-1 flex justify-between items-center">
+                                        <div>
+                                            <span class="font-medium">Nail Polish</span>
+                                            <p class="text-sm text-gray-500">Pet-safe nail colors</p>
+                                        </div>
+                                        <span class="text-lg font-semibold text-primary">₱100.00</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary" data-price="150" data-service="Perfume & Bow">
+                                    <div class="ml-3 flex-1 flex justify-between items-center">
+                                        <div>
+                                            <span class="font-medium">Perfume & Bow</span>
+                                            <p class="text-sm text-gray-500">Finishing touches for a perfect look</p>
+                                        </div>
+                                        <span class="text-lg font-semibold text-primary">₱150.00</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
+                        <div id="selectedServices" class="space-y-2 mb-4">
+                            <p class="text-gray-500 text-center py-4">No services selected</p>
+                        </div>
+                        <div class="border-t pt-4">
+                            <div class="flex justify-between items-center text-xl font-bold">
+                                <span>Total:</span>
+                                <span id="totalAmount" class="text-primary">₱0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <button type="button" onclick="previousStep()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-8 py-3 rounded-lg font-medium transition-colors">
+                            Back
+                        </button>
+                        <button type="button" onclick="nextStep()" id="servicesNextBtn" disabled 
+                                class="bg-gray-300 text-gray-500 px-8 py-3 rounded-lg font-medium cursor-not-allowed">
+                            Next: RFID Assignment
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: RFID Assignment -->
+            <div id="form-step-3" class="form-step hidden">
+                <div class="px-6 py-8 sm:px-10">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">RFID Tag Assignment</h2>
+                        <p class="text-gray-600">Please tap your RFID card on the scanner to complete check-in</p>
+                    </div>
+
+                    <!-- RFID Scanner Section -->
+                    <div class="rfid-waiting rounded-xl p-8 text-white text-center mb-8 rfid-pulse">
+                        <div class="text-6xl mb-4">📡</div>
+                        <h3 class="text-2xl font-semibold mb-2" id="rfidStatus">Waiting for RFID tap...</h3>
+                        <p class="mb-6 text-lg" id="rfidMessage">Please tap your RFID card on the scanner</p>
+                        
+                        <!-- RFID Card Visual -->
+                        <div class="bg-white/20 rounded-lg p-6 inline-block mb-4">
+                            <div class="flex items-center justify-center space-x-4">
+                                <div class="text-4xl">💳</div>
+                                <div class="text-left">
+                                    <p class="text-sm mb-1 opacity-90">Assigned Tag ID:</p>
+                                    <p class="text-2xl font-mono font-bold" id="assignedTag">---</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/10 rounded-lg p-4 text-sm">
+                            <p class="mb-2">🔄 System is monitoring for RFID card taps</p>
+                            <p class="opacity-80">Tap count will be tracked automatically</p>
+                        </div>
+                    </div>
+
+                    <!-- Booking Summary -->
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">📋 Booking Summary</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Pet Information</p>
+                                <p class="font-semibold" id="summaryPetName">-</p>
+                                <p class="text-sm text-gray-600" id="summaryPetDetails">-</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Owner</p>
+                                <p class="font-semibold" id="summaryOwnerName">-</p>
+                                <p class="text-sm text-gray-600" id="summaryOwnerContact">-</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t">
+                            <p class="text-sm text-gray-600 mb-2">Selected Services</p>
+                            <div id="summaryServices" class="space-y-1"></div>
+                            <div class="flex justify-between items-center mt-4 pt-4 border-t">
+                                <span class="text-lg font-semibold">Total Amount:</span>
+                                <span class="text-2xl font-bold text-primary" id="summaryTotal">₱0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RFID Process Information -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                        <h4 class="font-semibold text-blue-900 mb-3">📱 RFID Process Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                            <div>
+                                <h5 class="font-medium text-blue-800 mb-2">First Tap (Check-in)</h5>
+                                <ul class="space-y-1 text-blue-700">
+                                    <li>• Assigns RFID to your pet</li>
+                                    <li>• Completes check-in process</li>
+                                    <li>• Enables tracking system</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-blue-800 mb-2">Subsequent Taps</h5>
+                                <ul class="space-y-1 text-blue-700">
+                                    <li>• Tap #2: Start bathing process</li>
+                                    <li>• Tap #3: Begin grooming</li>
+                                    <li>• Tap #4: Ready for pickup</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Workflow Information -->
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+                        <h4 class="font-semibold text-green-900 mb-3">📄 What happens next?</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div class="text-center">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-green-600 font-semibold">1</span>
+                                </div>
+                                <p class="text-green-800">Check-in Complete</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-green-600 font-semibold">2</span>
+                                </div>
+                                <p class="text-green-800">Bathing</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-green-600 font-semibold">3</span>
+                                </div>
+                                <p class="text-green-800">Grooming</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-green-600 font-semibold">4</span>
+                                </div>
+                                <p class="text-green-800">Ready for Pickup</p>
+                            </div>
+                        </div>
+                        <p class="text-green-700 mt-3 text-center">You'll receive SMS updates at each stage!</p>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <button type="button" onclick="previousStep()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-8 py-3 rounded-lg font-medium transition-colors">
+                            Back
+                        </button>
+                        <button type="button" onclick="completeBooking()" id="completeBtn" disabled
+                                class="bg-gray-300 text-gray-500 px-8 py-3 rounded-lg font-medium cursor-not-allowed">
+                            Complete Check-in
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div id="success-message" class="form-step hidden">
+                <div class="px-6 py-12 sm:px-10 text-center">
+                    <div class="text-6xl mb-6">✅</div>
+                    <h2 class="text-3xl font-bold text-green-600 mb-4">Check-in Complete!</h2>
+                    <p class="text-xl text-gray-600 mb-6">Thank you for choosing 8Paws Pet Boutique!</p>
+                    
+                    <div class="bg-green-50 border border-green-200 rounded-xl p-6 mb-6 max-w-md mx-auto">
+                        <p class="text-green-800 font-semibold mb-2">Your booking details:</p>
+                        <p class="text-green-700">RFID Tag: <span class="font-mono font-bold" id="finalTagId">---</span></p>
+                        <p class="text-green-700">Booking ID: <span class="font-mono font-bold" id="finalBookingId">---</span></p>
+                        <p class="text-green-700 mt-2">Estimated time: <span class="font-semibold">1-2 hours</span></p>
+                    </div>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 max-w-lg mx-auto">
+                        <h4 class="font-semibold text-blue-900 mb-2">📱 Real-time Tracking</h4>
+                        <p class="text-blue-700 text-sm">Your pet's RFID card will automatically update their status as they move through each grooming stage. No manual check-ins required!</p>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-8">We'll send you email updates as your pet moves through each grooming stage. You can also track progress online using your RFID tag ID.</p>
+                    
+                    <div class="space-y-4">
+                        <button onclick="redirectToPortal()" class="bg-primary hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors mr-4">
+                            Go to Customer Portal
+                        </button>
+                        <button onclick="window.print()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors mr-4">
+                            Print Receipt
+                        </button>
+                        <button onclick="startNewBooking()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors">
+                            New Booking
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center text-sm text-gray-500">
+                <p>&copy; 2025 8Paws Pet Boutique & Grooming Salon. Professional Pet Care Services.</p>
+                <p class="mt-2">📍 123 Pet Street, Quezon City | 📞 (02) 8123-4567 | 📧 info@8pawspetboutique.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Include the updated JavaScript file -->
+    <script src="../js/check_in.js"></script>
+
+</body>
+</html>
