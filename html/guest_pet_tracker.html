@@ -49,6 +49,34 @@
             0%, 100% { border-left-color: rgba(255, 255, 255, 0.8); }
             50% { border-left-color: rgba(255, 255, 255, 1); }
         }
+
+        .status-pulse {
+            animation: pulse-status 2s infinite;
+        }
+
+        @keyframes pulse-status {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .status-highlight {
+            animation: highlight-flash 2s ease-out;
+        }
+
+        @keyframes highlight-flash {
+            0% { background-color: rgba(34, 197, 94, 0.2); }
+            50% { background-color: rgba(34, 197, 94, 0.4); }
+            100% { background-color: transparent; }
+        }
+
+        .notification-update {
+            animation: slideInNotification 0.3s ease-out;
+        }
+
+        @keyframes slideInNotification {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">

@@ -3,6 +3,8 @@
         
         let verificationToken = null;
         let resendTimer = null;
+        let resetToken = null;
+        let resendResetTimer = null;
 
         // Form switching functions
         function showLoginForm() {
@@ -25,12 +27,21 @@
             document.getElementById('forgot-password-form').classList.remove('hidden');
         }
 
+        function showResetCodeForm() {
+            hideAllForms();
+            document.getElementById('reset-code-form').classList.remove('hidden');
+        }
+
+        function showNewPasswordForm() {
+            hideAllForms();
+            document.getElementById('new-password-form').classList.remove('hidden');
+        }
+
         function hideAllForms() {
-            document.querySelectorAll('#login-form, #signup-form, #verification-form, #forgot-password-form').forEach(form => {
+            document.querySelectorAll('#login-form, #signup-form, #verification-form, #forgot-password-form, #reset-code-form, #new-password-form').forEach(form => {
                 form.classList.add('hidden');
             });
         }
-
         // Password visibility toggle
         function togglePassword(inputId) {
             const input = document.getElementById(inputId);
@@ -120,6 +131,61 @@
                 signupBtn.disabled = true;
                 signupBtn.className = 'w-full bg-gray-300 text-gray-500 py-3 rounded-lg font-medium cursor-not-allowed transition-colors';
             }
+        }
+
+        function setupResetCodeInputs() {
+            const inputs = document.querySelectorAll('.reset-code-input');
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                    checkResetCode();
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+            });
+        }
+
+        function checkResetCode() {
+            const inputs = document.querySelectorAll('.reset-code-input');
+            const code = Array.from(inputs).map(input => input.value).join('');
+            const verifyBtn = document.getElementById('verifyResetCodeBtn');
+            
+            if (code.length === 6) {
+                verifyBtn.disabled = false;
+                verifyBtn.className = 'w-full bg-primary hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors';
+            } else {
+                verifyBtn.disabled = true;
+                verifyBtn.className = 'w-full bg-gray-300 text-gray-500 py-3 rounded-lg font-medium cursor-not-allowed transition-colors';
+            }
+        }
+
+        function startResendResetTimer() {
+            let seconds = 60;
+            const timerDiv = document.getElementById('resendResetTimer');
+            const countdownSpan = document.getElementById('resetCountdown');
+            const resendBtn = document.getElementById('resendResetBtn');
+            
+            timerDiv.classList.remove('hidden');
+            resendBtn.disabled = true;
+            resendBtn.className = 'text-gray-400 font-medium cursor-not-allowed';
+            
+            resendResetTimer = setInterval(() => {
+                seconds--;
+                countdownSpan.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(resendResetTimer);
+                    timerDiv.classList.add('hidden');
+                    resendBtn.disabled = false;
+                    resendBtn.className = 'text-primary hover:text-blue-700 font-medium';
+                }
+            }, 1000);
         }
 
         // Verification code handling
@@ -338,7 +404,7 @@
             const email = document.getElementById('resetEmail').value;
             
             try {
-                showNotification('Sending reset instructions...', 'info');
+                showNotification('Sending reset code...', 'info');
                 
                 const response = await fetch(`${API_BASE}auth.php`, {
                     method: 'POST',
@@ -354,18 +420,132 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    showNotification('Reset instructions sent to your email!', 'success');
-                    setTimeout(() => {
-                        showLoginForm();
-                    }, 2000);
+                    resetToken = result.reset_token;
+                    document.getElementById('resetCodeEmail').textContent = email;
+                    
+                    showNotification('Reset code sent to your email!', 'success');
+                    showResetCodeForm();
+                    startResendResetTimer();
                 } else {
-                    showNotification(result.error || 'Failed to send reset instructions', 'error');
+                    showNotification(result.error || 'Failed to send reset code', 'error');
                 }
             } catch (error) {
                 console.error('Forgot password error:', error);
                 showNotification('Connection error. Please try again.', 'error');
             }
         }
+
+        async function handleResetCodeVerification(e) {
+    e.preventDefault();
+    
+    const inputs = document.querySelectorAll('.reset-code-input');
+    const code = Array.from(inputs).map(input => input.value).join('');
+    
+    try {
+        showNotification('Verifying reset code...', 'info');
+        
+        const response = await fetch(`${API_BASE}auth.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'verify_reset_code',
+                reset_token: resetToken,
+                reset_code: code
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Code verified! Set your new password.', 'success');
+            showNewPasswordForm();
+        } else {
+            showNotification(result.error || 'Verification failed', 'error');
+            inputs.forEach(input => input.value = '');
+            inputs[0].focus();
+        }
+    } catch (error) {
+        console.error('Reset code verification error:', error);
+        showNotification('Connection error. Please try again.', 'error');
+    }
+}
+
+async function handleNewPassword(e) {
+    e.preventDefault();
+    
+    const inputs = document.querySelectorAll('.reset-code-input');
+    const code = Array.from(inputs).map(input => input.value).join('');
+    const password = document.getElementById('newPassword').value;
+    
+    try {
+        showNotification('Resetting password...', 'info');
+        
+        const response = await fetch(`${API_BASE}auth.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'reset_password',
+                reset_token: resetToken,
+                reset_code: code,
+                password: password
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Password reset successfully! Please sign in.', 'success');
+            setTimeout(() => {
+                showLoginForm();
+            }, 2000);
+        } else {
+            showNotification(result.error || 'Password reset failed', 'error');
+        }
+    } catch (error) {
+        console.error('Password reset error:', error);
+        showNotification('Connection error. Please try again.', 'error');
+    }
+}
+
+async function resendResetCode() {
+    if (resendResetTimer) return;
+    
+    try {
+        showNotification('Resending reset code...', 'info');
+        
+        const response = await fetch(`${API_BASE}auth.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'resend_reset_code',
+                reset_token: resetToken
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('New reset code sent!', 'success');
+            startResendResetTimer();
+            
+            document.querySelectorAll('.reset-code-input').forEach(input => {
+                input.value = '';
+            });
+            document.querySelector('.reset-code-input').focus();
+        } else {
+            showNotification(result.error || 'Failed to resend code', 'error');
+        }
+    } catch (error) {
+        console.error('Resend reset code error:', error);
+        showNotification('Connection error. Please try again.', 'error');
+    }
+}
 
         async function resendVerification() {
             if (resendTimer) return; // Timer is still running
@@ -418,6 +598,71 @@
             }
             input.value = value;
         }
+
+
+        function updateNewPasswordStrength() {
+            const password = document.getElementById('newPassword').value;
+            const bars = document.querySelectorAll('.new-password-bar');
+            const text = document.querySelector('.new-password-text');
+            
+            if (!password) {
+                bars.forEach(bar => bar.className = 'new-password-bar bg-gray-200 rounded-full h-1 flex-1');
+                text.textContent = 'Enter a password';
+                text.className = 'new-password-text text-gray-500 mt-1';
+                return;
+            }
+
+            const { strength, feedback } = checkPasswordStrength(password);
+            const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'];
+            const texts = ['Very Weak', 'Weak', 'Good', 'Strong'];
+            const textColors = ['text-red-600', 'text-orange-600', 'text-yellow-600', 'text-green-600'];
+
+            bars.forEach((bar, index) => {
+                bar.className = `new-password-bar rounded-full h-1 flex-1 ${index < strength ? colors[strength - 1] : 'bg-gray-200'}`;
+            });
+
+            text.textContent = feedback.length ? feedback.join(', ') : texts[strength - 1];
+            text.className = `new-password-text mt-1 ${feedback.length ? 'text-gray-600' : textColors[strength - 1]}`;
+            }
+
+            function checkNewPasswordMatch() {
+            const password = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmNewPassword').value;
+            const matchDiv = document.getElementById('new-password-match');
+            
+            if (!confirm) {
+                matchDiv.textContent = '';
+                return false;
+            }
+            
+            if (password === confirm) {
+                matchDiv.textContent = '✓ Passwords match';
+                matchDiv.className = 'mt-1 text-xs text-green-600';
+                return true;
+            } else {
+                matchDiv.textContent = '✗ Passwords do not match';
+                matchDiv.className = 'mt-1 text-xs text-red-600';
+                return false;
+            }
+            }
+
+            function validateNewPasswordForm() {
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            const passwordsMatch = checkNewPasswordMatch();
+            const { strength } = checkPasswordStrength(password);
+            
+            const resetBtn = document.getElementById('resetPasswordBtn');
+            const isValid = password.trim() && confirmPassword.trim() && passwordsMatch && strength >= 2;
+            
+            if (isValid) {
+                resetBtn.disabled = false;
+                resetBtn.className = 'w-full bg-primary hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors';
+            } else {
+                resetBtn.disabled = true;
+                resetBtn.className = 'w-full bg-gray-300 text-gray-500 py-3 rounded-lg font-medium cursor-not-allowed transition-colors';
+            }
+            }
 
         // Notification system
         function showNotification(message, type = 'info') {
@@ -485,6 +730,11 @@
             document.getElementById('signupForm').addEventListener('submit', handleSignup);
             document.getElementById('verificationForm').addEventListener('submit', handleVerification);
             document.getElementById('forgotPasswordForm').addEventListener('submit', handleForgotPassword);
+            document.getElementById('resetCodeForm').addEventListener('submit', handleResetCodeVerification);
+            document.getElementById('newPasswordForm').addEventListener('submit', handleNewPassword);
+
+            // Set up reset code inputs
+            setupResetCodeInputs();
             
             // Set up verification code inputs
             setupVerificationInputs();
@@ -506,10 +756,22 @@
                 updatePasswordStrength();
                 validateSignupForm();
             });
+
             
             document.getElementById('confirmPassword').addEventListener('input', function() {
                 checkPasswordMatch();
                 validateSignupForm();
+            });
+
+            // Set up new password validation
+            document.getElementById('newPassword').addEventListener('input', function() {
+                updateNewPasswordStrength();
+                validateNewPasswordForm();
+            });
+
+            document.getElementById('confirmNewPassword').addEventListener('input', function() {
+                checkNewPasswordMatch();
+                validateNewPasswordForm();
             });
             
             // Set up other form validation

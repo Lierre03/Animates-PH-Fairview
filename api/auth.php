@@ -96,6 +96,12 @@ if ($method === 'POST') {
         case 'verify_token':
             verifyToken();
             break;
+        case 'verify_reset_code':
+            handleVerifyResetCode($input);
+            break;
+        case 'resend_reset_code':
+            handleResendResetCode($input);
+            break;
         default:
             http_response_code(400);
             echo json_encode([
@@ -112,6 +118,11 @@ if ($method === 'POST') {
     ]);
 }
 exit;
+
+
+
+
+
 
 function handleLogin($input) {
     try {
@@ -405,21 +416,23 @@ function handleForgotPassword($input) {
             exit;
         }
         
+        $resetCode = sprintf('%06d', mt_rand(0, 999999));
         $resetToken = bin2hex(random_bytes(32));
-        $resetExpires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+        $resetExpires = date('Y-m-d H:i:s', strtotime('+30 minutes'));
         
         $stmt = $db->prepare("
             UPDATE users 
-            SET password_reset_token = ?, password_reset_expires = ? 
+            SET password_reset_token = ?, password_reset_code = ?, password_reset_code_expires = ? 
             WHERE id = ?
         ");
-        $stmt->execute([$resetToken, $resetExpires, $user['id']]);
+        $stmt->execute([$resetToken, $resetCode, $resetExpires, $user['id']]);
         
-        sendPasswordResetEmail($email, $user['first_name'], $resetToken);
+        sendPasswordResetCodeEmail($email, $user['first_name'], $resetCode);
         
         echo json_encode([
             'success' => true,
-            'message' => 'Password reset instructions sent to your email'
+            'reset_token' => $resetToken,
+            'message' => 'Password reset code sent to your email'
         ]);
         exit;
         
@@ -433,12 +446,218 @@ function handleForgotPassword($input) {
     }
 }
 
+function handleVerifyResetCode($input) {
+    try {
+        $db = getDB();
+        
+        if (!isset($input['reset_token']) || empty($input['reset_token'])) {
+            throw new Exception('Reset token is required');
+        }
+        
+        if (!isset($input['reset_code']) || empty($input['reset_code'])) {
+            throw new Exception('Reset code is required');
+        }
+        
+        $stmt = $db->prepare("
+            SELECT id, email, password_reset_code, password_reset_code_expires, first_name, last_name 
+            FROM users 
+            WHERE password_reset_token = ?
+        ");
+        $stmt->execute([$input['reset_token']]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$user) {
+            throw new Exception('Invalid reset token');
+        }
+        
+        if ($user['password_reset_code_expires'] && strtotime($user['password_reset_code_expires']) < time()) {
+            throw new Exception('Reset code has expired. Please request a new one.');
+        }
+        
+        if ($user['password_reset_code'] !== $input['reset_code']) {
+            throw new Exception('Invalid reset code');
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Reset code verified successfully!'
+        ]);
+        exit;
+        
+    } catch(Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+        exit;
+    }
+}
+
+function handleResendResetCode($input) {
+    try {
+        $db = getDB();
+        
+        if (!isset($input['reset_token']) || empty($input['reset_token'])) {
+            throw new Exception('Reset token is required');
+        }
+        
+        $stmt = $db->prepare("
+            SELECT id, email, first_name 
+            FROM users 
+            WHERE password_reset_token = ?
+        ");
+        $stmt->execute([$input['reset_token']]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$user) {
+            throw new Exception('Invalid reset token');
+        }
+        
+        $resetCode = sprintf('%06d', mt_rand(0, 999999));
+        
+        $stmt = $db->prepare("
+            UPDATE users 
+            SET password_reset_code = ?, password_reset_code_expires = DATE_ADD(NOW(), INTERVAL 30 MINUTE) 
+            WHERE id = ?
+        ");
+        $stmt->execute([$resetCode, $user['id']]);
+        
+        sendPasswordResetCodeEmail($user['email'], $user['first_name'], $resetCode);
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'New reset code sent to your email'
+        ]);
+        exit;
+        
+    } catch(Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+        exit;
+    }
+}
+
+
+
+function sendPasswordResetCodeEmail($email, $firstName, $resetCode) {
+    $mail = new PHPMailer(true);
+    
+    try {
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = '8pawspetboutique@gmail.com';
+        $mail->Password   = 'ofvcexgxpmmzoond';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+        
+        $mail->setFrom('8pawspetboutique@gmail.com', '8Paws Pet Boutique');
+        $mail->addAddress($email, $firstName);
+        
+        $mail->isHTML(true);
+        $mail->Subject = 'Password Reset Code - 8Paws Pet Boutique';
+        $mail->Body = getPasswordResetCodeEmailTemplate($firstName, $resetCode);
+        
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Email could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        throw new Exception('Failed to send reset code email');
+    }
+}
+
+function getPasswordResetCodeEmailTemplate($firstName, $resetCode) {
+    return "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Password Reset Code</title>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .code-box { background: #f8f9fa; border: 2px dashed #667eea; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px; }
+            .code { font-size: 32px; font-weight: bold; color: #667eea; font-family: monospace; letter-spacing: 8px; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+            .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; border-radius: 6px; margin: 15px 0; }
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>
+                <h1>🔑 Password Reset Code</h1>
+                <p>8Paws Pet Boutique & Grooming Salon</p>
+            </div>
+            <div class='content'>
+                <h2>Hi $firstName,</h2>
+                <p>We received a request to reset the password for your 8Paws Pet Boutique account.</p>
+                
+                <div class='code-box'>
+                    <p style='margin: 0 0 10px 0; font-weight: bold;'>Your Password Reset Code:</p>
+                    <div class='code'>$resetCode</div>
+                </div>
+                
+                <p>Enter this code to verify your identity and proceed with resetting your password. This code will expire in 30 minutes.</p>
+                
+                <div class='warning'>
+                    <strong>⚠️ Security Notice:</strong><br>
+                    If you didn't request this password reset, please ignore this email. Your account remains secure.
+                </div>
+                
+                <p>For security reasons, this code can only be used once. If you need another reset code, please request a new one.</p>
+                
+                <p>Best regards,<br>
+                The 8Paws Pet Boutique Team</p>
+            </div>
+            <div class='footer'>
+                <p>8Paws Pet Boutique & Grooming Salon<br>
+                📍 123 Pet Street, Quezon City | 📞 (02) 8123-4567<br>
+                📧 info@8pawspetboutique.com</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function handleResetPassword($input) {
     try {
         $db = getDB();
         
-        if (!isset($input['token']) || empty($input['token'])) {
+        if (!isset($input['reset_token']) || empty($input['reset_token'])) {
             throw new Exception('Reset token is required');
+        }
+        
+        if (!isset($input['reset_code']) || empty($input['reset_code'])) {
+            throw new Exception('Reset code is required');
         }
         
         if (!isset($input['password']) || empty($input['password'])) {
@@ -450,21 +669,29 @@ function handleResetPassword($input) {
         }
         
         $stmt = $db->prepare("
-            SELECT id 
+            SELECT id, password_reset_code, password_reset_code_expires 
             FROM users 
-            WHERE password_reset_token = ? AND password_reset_expires > NOW()
+            WHERE password_reset_token = ?
         ");
-        $stmt->execute([$input['token']]);
+        $stmt->execute([$input['reset_token']]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if (!$user) {
-            throw new Exception('Invalid or expired reset token');
+            throw new Exception('Invalid reset token');
+        }
+        
+        if ($user['password_reset_code_expires'] && strtotime($user['password_reset_code_expires']) < time()) {
+            throw new Exception('Reset code has expired');
+        }
+        
+        if ($user['password_reset_code'] !== $input['reset_code']) {
+            throw new Exception('Invalid reset code');
         }
         
         $passwordHash = password_hash($input['password'], PASSWORD_DEFAULT);
         $stmt = $db->prepare("
             UPDATE users 
-            SET password_hash = ?, password_reset_token = NULL, password_reset_expires = NULL 
+            SET password_hash = ?, password_reset_token = NULL, password_reset_code = NULL, password_reset_code_expires = NULL 
             WHERE id = ?
         ");
         $stmt->execute([$passwordHash, $user['id']]);
@@ -484,6 +711,11 @@ function handleResetPassword($input) {
         exit;
     }
 }
+
+
+
+
+
 
 function verifyToken() {
     try {

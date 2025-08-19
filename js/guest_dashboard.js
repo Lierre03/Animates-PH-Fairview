@@ -2,48 +2,50 @@
 let refreshInterval = null;
 let currentBookingData = null;
 let trackingToken = null;
+let lastKnownStatus = null;
 
 // API base URL
 const API_BASE = 'http://localhost/8paws/api/';
 
-// Status configuration
+
 const statusConfig = {
     'checked-in': {
         label: 'Checked In',
         icon: 'fa-clipboard-check',
         color: 'blue',
-        progress: 25,
+        progress: 20,
         description: 'Your pet has been checked in and is waiting for services'
     },
     'bathing': {
         label: 'Bathing',
         icon: 'fa-bath',
         color: 'indigo',
-        progress: 50,
+        progress: 40,
         description: 'Your pet is currently being bathed and pampered'
     },
     'grooming': {
         label: 'Grooming',
         icon: 'fa-scissors',
         color: 'purple',
-        progress: 75,
+        progress: 60,
         description: 'Professional grooming services in progress'
     },
     'ready': {
         label: 'Ready for Pickup',
         icon: 'fa-bell',
         color: 'green',
-        progress: 100,
+        progress: 80,
         description: 'Your pet is ready! Please come for pickup'
     },
     'completed': {
-        label: 'Completed',
+        label: 'Service Completed',
         icon: 'fa-check-circle',
-        color: 'green',
+        color: 'emerald',
         progress: 100,
-        description: 'Service completed successfully'
+        description: 'Service completed successfully - Thank you for choosing us!'
     }
 };
+
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
@@ -59,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load initial data
     loadBookingData();
     
-    // Start auto-refresh
+    // Start auto-refresh with shorter interval for real-time updates
     startAutoRefresh();
 });
 
@@ -69,6 +71,15 @@ async function loadBookingData() {
         const result = await response.json();
         
         if (result.success) {
+            // Check for status changes
+            const newStatus = result.data.status;
+            if (lastKnownStatus && lastKnownStatus !== newStatus) {
+                showStatusChangeNotification(lastKnownStatus, newStatus);
+                // Add visual feedback for status change
+                highlightStatusChange();
+            }
+            
+            lastKnownStatus = newStatus;
             currentBookingData = result.data;
             populateDashboard(result.data);
             showDashboard();
@@ -78,6 +89,68 @@ async function loadBookingData() {
     } catch (error) {
         console.error('Error loading booking data:', error);
         showError('Connection error. Please check your internet connection.');
+    }
+}
+
+// Updated showStatusChangeNotification function - REPLACE existing function
+function showStatusChangeNotification(oldStatus, newStatus) {
+    const oldConfig = statusConfig[oldStatus] || {};
+    const newConfig = statusConfig[newStatus] || {};
+    
+    // Special handling for completion
+    if (newStatus === 'completed') {
+        celebrateCompletion();
+        return;
+    }
+    
+    // Create and show notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 max-w-sm notification-update';
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-bell mr-3 text-lg"></i>
+            <div>
+                <div class="font-semibold">Status Updated!</div>
+                <div class="text-sm">Your pet is now: ${newConfig.label}</div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate notification
+    notification.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+        notification.style.transition = 'transform 0.3s ease-out';
+    }, 100);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 5000);
+    
+    // Play notification sound (if supported)
+    try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+T16XspBFiTyO/dg');
+        audio.play().catch(() => {});
+    } catch (e) {
+        // Ignore if audio fails
+    }
+}
+
+function highlightStatusChange() {
+    const statusBadge = document.getElementById('statusBadge');
+    if (statusBadge) {
+        statusBadge.classList.add('status-highlight');
+        setTimeout(() => {
+            statusBadge.classList.remove('status-highlight');
+        }, 2000);
     }
 }
 
@@ -147,9 +220,11 @@ function updateStatus(status) {
     updateTimeline(status);
 }
 
+
+// Updated updateTimeline function - replace existing function
 function updateTimeline(currentStatus) {
     const timelineSteps = document.getElementById('timelineSteps');
-    const steps = ['checked-in', 'bathing', 'grooming', 'ready'];
+    const steps = ['checked-in', 'bathing', 'grooming', 'ready', 'completed']; // ADDED 'completed'
     
     timelineSteps.innerHTML = steps.map((step, index) => {
         const config = statusConfig[step];
@@ -185,10 +260,16 @@ function updateTimeline(currentStatus) {
             }
         }
         
+        // Special styling for completed status
+        if (step === 'completed' && isActive) {
+            statusClass = 'bg-gradient-to-r from-emerald-500 to-green-600 border-emerald-500 completion-glow';
+        }
+        
         return `
             <div class="relative flex items-start">
                 <div class="relative z-10 w-16 h-16 ${statusClass} border-4 rounded-full flex items-center justify-center shadow-lg">
                     <i class="fas ${config.icon} text-xl ${iconClass}"></i>
+                    ${step === 'completed' && isActive ? '<div class="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full blur opacity-75 animate-pulse"></div>' : ''}
                 </div>
                 <div class="ml-6 min-w-0 flex-1">
                     <div class="flex items-center justify-between">
@@ -196,12 +277,61 @@ function updateTimeline(currentStatus) {
                         ${stepTime ? `<span class="text-sm ${timeClass} font-medium">${stepTime}</span>` : ''}
                     </div>
                     <p class="text-sm text-gray-600 mt-1">${config.description}</p>
-                    ${isActive ? '<div class="mt-2 text-sm font-medium text-blue-600">🔄 Currently in progress...</div>' : ''}
+                    ${isActive && step === 'completed' ? '<div class="mt-2 text-sm font-bold text-emerald-600">🎉 Thank you for choosing 8Paws Pet Boutique!</div>' : ''}
+                    ${isActive && step !== 'completed' ? '<div class="mt-2 text-sm font-medium text-blue-600">🔄 Currently in progress...</div>' : ''}
                 </div>
             </div>
         `;
     }).join('');
 }
+
+// Add completion celebration function - ADD THIS NEW FUNCTION
+function celebrateCompletion() {
+    // Create celebration overlay
+    const celebration = document.createElement('div');
+    celebration.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 celebration-overlay';
+    celebration.innerHTML = `
+        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center transform scale-95 celebration-popup">
+            <div class="text-6xl mb-4 animate-bounce">🎉</div>
+            <h2 class="text-2xl font-bold text-emerald-600 mb-2">Service Completed!</h2>
+            <p class="text-gray-600 mb-4">Thank you for choosing 8Paws Pet Boutique!</p>
+            <div class="text-4xl mb-4">✨🐾✨</div>
+            <button onclick="closeCelebration()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                Wonderful! 🎊
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(celebration);
+    
+    // Animate in
+    setTimeout(() => {
+        celebration.querySelector('.celebration-popup').style.transform = 'scale(1)';
+        celebration.querySelector('.celebration-popup').style.transition = 'transform 0.3s ease-out';
+    }, 100);
+    
+    // Auto-remove after 5 seconds if user doesn't close it
+    setTimeout(() => {
+        if (document.body.contains(celebration)) {
+            closeCelebration();
+        }
+    }, 5000);
+}
+
+// Add close celebration function - ADD THIS NEW FUNCTION
+window.closeCelebration = function() {
+    const celebration = document.querySelector('.celebration-overlay');
+    if (celebration) {
+        celebration.style.opacity = '0';
+        celebration.style.transition = 'opacity 0.3s ease-out';
+        setTimeout(() => {
+            if (celebration.parentNode) {
+                celebration.remove();
+            }
+        }, 300);
+    }
+}
+
 
 function populateServices(services) {
     const servicesList = document.getElementById('servicesList');
@@ -223,14 +353,14 @@ function populateServices(services) {
 }
 
 function startAutoRefresh() {
-    // Refresh every 30 seconds
+    // Refresh every 15 seconds for more real-time updates
     refreshInterval = setInterval(async () => {
         try {
             await loadBookingData();
         } catch (error) {
             console.error('Auto-refresh error:', error);
         }
-    }, 30000);
+    }, 15000);
 }
 
 function stopAutoRefresh() {
