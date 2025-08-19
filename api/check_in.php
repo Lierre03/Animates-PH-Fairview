@@ -194,8 +194,8 @@ function handleCheckin() {
             throw new Exception('RFID card not found or not active');
         }
         
-        // Create or find customer
-        $customerId = findOrCreateCustomer($db, $input);
+        // Create or find customer - MODIFIED TO ALWAYS CREATE NEW RECORDS
+        $customerId = createCustomerRecord($db, $input);
         
         // Create pet
         $petId = createPet($db, $customerId, $input);
@@ -274,6 +274,17 @@ function handleCheckin() {
     }
 }
 
+// MODIFIED FUNCTION: Always create new customer records for historical purposes
+function createCustomerRecord($db, $input) {
+    // Always create a new customer record for each booking to maintain history
+    // This ensures we have a complete record of each visit/booking
+    $stmt = $db->prepare("INSERT INTO customers (name, phone, email) VALUES (?, ?, ?)");
+    $stmt->execute([$input['ownerName'], $input['ownerPhone'], $input['ownerEmail']]);
+    return $db->lastInsertId();
+}
+
+// DEPRECATED: This function was causing the overwrite issue
+// Keeping for reference but not using anymore
 function findOrCreateCustomer($db, $input) {
     // Check if customer exists by phone
     $stmt = $db->prepare("SELECT id FROM customers WHERE phone = ?");
@@ -281,7 +292,7 @@ function findOrCreateCustomer($db, $input) {
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if ($customer) {
-        // Update customer info
+        // Update customer info - THIS WAS THE PROBLEM
         $stmt = $db->prepare("UPDATE customers SET name = ?, email = ?, updated_at = NOW() WHERE id = ?");
         $stmt->execute([$input['ownerName'], $input['ownerEmail'], $customer['id']]);
         return $customer['id'];
