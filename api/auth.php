@@ -102,6 +102,9 @@ if ($method === 'POST') {
         case 'resend_reset_code':
             handleResendResetCode($input);
             break;
+        case 'check_role':
+            checkUserRole();
+            break;
         default:
             http_response_code(400);
             echo json_encode([
@@ -743,6 +746,53 @@ function verifyToken() {
     }
 }
 
+
+
+function checkUserRole() {
+    try {
+        $token = getBearerToken();
+        if (!$token) {
+            throw new Exception('No token provided');
+        }
+        
+        $decoded = verifyJWT($token);
+        $db = getDB();
+        
+        // Check if user exists and has customer role
+        $stmt = $db->prepare("SELECT id, email, role, is_active FROM users WHERE id = ? AND email = ?");
+        $stmt->execute([$decoded->user_id, $decoded->email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$user) {
+            throw new Exception('User not found');
+        }
+        
+        if (!$user['is_active']) {
+            throw new Exception('Account is deactivated');
+        }
+        
+        if ($user['role'] !== 'customer') {
+            throw new Exception('Access denied. Customer role required.');
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'user_id' => $user['id'],
+            'email' => $user['email'],
+            'role' => $user['role']
+        ]);
+        exit;
+        
+    } catch(Exception $e) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+        exit;
+    }
+}
+
 // JWT Functions (unchanged)
 function generateJWT($userId, $email) {
     $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
@@ -991,4 +1041,8 @@ function getPasswordResetEmailTemplate($firstName, $resetToken) {
     </html>
     ";
 }
+
+
+
+
 ?>

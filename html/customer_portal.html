@@ -124,28 +124,11 @@
             <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">📡 Track Your Pet</h2>
                 
-                <!-- RFID Input -->
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-1">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Enter RFID Tag ID</label>
-                            <input type="text" id="rfidInput" placeholder="e.g., A1B2C3D4" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
-                        </div>
-                        <button onclick="trackPet()" class="bg-primary hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                            Track Pet
-                        </button>
-                    </div>
-                    <div class="mt-3 text-sm text-gray-600">
-                        <p>💡 Your RFID tag ID is provided when you check in your pet</p>
-                    </div>
-                </div>
-
-                <!-- Active Bookings -->
+                <!-- Active Bookings Container - This will show user's bookings automatically -->
                 <div id="activeBookingsContainer">
                     <div class="text-center py-8">
                         <div class="text-4xl mb-4">🔍</div>
-                        <p class="text-gray-500">Loading active bookings...</p>
+                        <p class="text-gray-500">Loading your active bookings...</p>
                     </div>
                 </div>
             </div>
@@ -360,42 +343,10 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <div class="flex items-center space-x-3 mb-4">
-                        <div class="text-2xl">🐾</div>
-                        <div>
-                            <h3 class="text-lg font-bold text-gray-900">8Paws Pet Boutique</h3>
-                            <p class="text-sm text-gray-600">& Grooming Salon</p>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-600">Caring for your beloved pets with professional grooming services and modern RFID technology.</p>
-                </div>
-                
-                <div>
-                    <h4 class="font-semibold text-gray-900 mb-4">Contact Info</h4>
-                    <div class="space-y-2 text-sm text-gray-600">
-                        <p>📍 123 Pet Street, Quezon City</p>
-                        <p>📞 (02) 8123-4567</p>
-                        <p>📧 info@8pawspetboutique.com</p>
-                        <p>🕐 Mon-Sat: 8AM-6PM</p>
-                    </div>
-                </div>
-                
-                <div>
-                    <h4 class="font-semibold text-gray-900 mb-4">Quick Links</h4>
-                    <div class="space-y-2 text-sm">
-                        <a href="check_in.html" class="text-gray-600 hover:text-primary block">Check-in Pet</a>
-                        <a href="#" class="text-gray-600 hover:text-primary block">Service Pricing</a>
-                        <a href="#" class="text-gray-600 hover:text-primary block">Pet Care Tips</a>
-                        <a href="#" class="text-gray-600 hover:text-primary block">Contact Us</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="border-t mt-8 pt-8 text-center text-sm text-gray-500">
-                <p>&copy; 2025 8Paws Pet Boutique & Grooming Salon. All rights reserved. | Privacy Policy | Terms of Service</p>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center text-sm text-gray-500">
+                <p>&copy; 2025 8Paws Pet Boutique & Grooming Salon. Professional Pet Care Services.</p>
+                <p class="mt-2">📍 123 Pet Street, Quezon City | 📞 (02) 8123-4567 | 📧 info@8pawspetboutique.com</p>
             </div>
         </div>
     </footer>
