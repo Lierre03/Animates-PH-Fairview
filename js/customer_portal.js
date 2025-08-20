@@ -578,3 +578,383 @@ function handleRFIDScan(tagId) {
         trackPet();
     }
 }
+
+
+
+
+
+
+
+
+
+// Add these functions to your existing customer_portal.js file
+
+// Initialize appointments section
+async function initializeAppointments() {
+    try {
+        // Load staff members
+        await loadStaffMembers();
+        
+        // Load services
+        await loadServices();
+        
+        // Set minimum date to today
+        setMinimumDate();
+        
+        // Initialize pet type change handler
+        initializePetTypeHandler();
+        
+        // Initialize service selection handlers
+        initializeServiceHandlers();
+        
+    } catch (error) {
+        console.error('Error initializing appointments:', error);
+        showNotification('Error loading appointment data', 'error');
+    }
+}
+
+// Load staff members for preferred staff dropdown
+async function loadStaffMembers() {
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_BASE}appointments.php?action=get_staff`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            const staffSelect = document.querySelector('select[name="preferredStaff"]');
+            if (staffSelect) {
+                // Clear existing options except "No Preference"
+                staffSelect.innerHTML = '<option value="">No Preference</option>';
+                
+                result.data.forEach(staff => {
+                    const option = document.createElement('option');
+                    option.value = staff.id;
+                    option.textContent = `${staff.first_name} ${staff.last_name}`;
+                    staffSelect.appendChild(option);
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error loading staff members:', error);
+    }
+}
+
+// Load services and populate service sections
+async function loadServices() {
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_BASE}appointments.php?action=get_services`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            populateServices(result.data);
+        }
+    } catch (error) {
+        console.error('Error loading services:', error);
+    }
+}
+
+// Populate services in the form
+function populateServices(services) {
+    const basicServices = services.filter(s => s.category === 'basic');
+    const premiumServices = services.filter(s => s.category === 'premium');
+    const addonServices = services.filter(s => s.category === 'addon');
+    
+    // Populate basic services
+    populateServiceSection('basicServices', basicServices);
+    
+    // Populate premium services  
+    populateServiceSection('premiumServices', premiumServices);
+    
+    // Populate addon services
+    populateServiceSection('addonServices', addonServices);
+}
+
+// Replace the existing populateServiceSection function with this updated version:
+function populateServiceSection(containerId, services) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const servicesContainer = container.querySelector('.space-y-4');
+    if (!servicesContainer) return;
+    
+    servicesContainer.innerHTML = '';
+    
+    services.forEach(service => {
+        const serviceHtml = `
+            <label class="flex items-center p-4 bg-white/80 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 cursor-pointer hover:shadow-md">
+                <input type="checkbox" class="service-checkbox w-5 h-5 text-primary rounded" data-service="${service.name}" data-price="${service.price}" data-id="${service.id}">
+                <div class="ml-4 flex-1 flex justify-between items-center">
+                    <div>
+                        <span class="font-medium text-gray-900">${service.name}</span>
+                        ${service.description ? `<p class="text-sm text-gray-600">${service.description}</p>` : ''}
+                    </div>
+                    <span class="text-lg font-bold text-primary">₱${parseFloat(service.price).toFixed(2)}</span>
+                </div>
+            </label>
+        `;
+        servicesContainer.insertAdjacentHTML('beforeend', serviceHtml);
+    });
+}
+
+// Set minimum date to today
+function setMinimumDate() {
+    const dateInput = document.querySelector('input[type="date"]');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+    }
+}
+
+// Initialize pet type change handler
+function initializePetTypeHandler() {
+    const petTypeSelect = document.querySelector('select[name="petType"]');
+    const petBreedSelect = document.querySelector('select[name="petBreed"]');
+    
+    if (!petTypeSelect || !petBreedSelect) return;
+    
+    petTypeSelect.addEventListener('change', async function() {
+        const petType = this.value.toLowerCase();
+        
+        if (petType === 'others') {
+            petBreedSelect.innerHTML = '<option value="">Enter breed manually</option>';
+            petBreedSelect.disabled = true;
+            // You might want to show a text input for custom breed here
+        } else if (petType) {
+            await loadBreeds(petType, petBreedSelect);
+        } else {
+            petBreedSelect.innerHTML = '<option value="">First select pet type</option>';
+            petBreedSelect.disabled = true;
+        }
+    });
+}
+
+// Load breeds based on pet type (from check_in.js logic)
+async function loadBreeds(petType, breedSelect) {
+    try {
+        breedSelect.innerHTML = '<option value="">Loading breeds...</option>';
+        breedSelect.disabled = false;
+        
+        let apiUrl = '';
+        if (petType === 'dog') {
+            apiUrl = 'https://dog.ceo/api/breeds/list/all';
+        } else if (petType === 'cat') {
+            apiUrl = 'https://api.thecatapi.com/v1/breeds';
+        }
+        
+        if (!apiUrl) {
+            breedSelect.innerHTML = '<option value="">Select breed</option>';
+            return;
+        }
+        
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        
+        breedSelect.innerHTML = '<option value="">Select breed</option>';
+        
+        if (petType === 'dog') {
+            const breeds = Object.keys(data.message);
+            breeds.forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed;
+                option.textContent = breed.charAt(0).toUpperCase() + breed.slice(1);
+                breedSelect.appendChild(option);
+            });
+        } else if (petType === 'cat') {
+            data.forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed.name;
+                option.textContent = breed.name;
+                breedSelect.appendChild(option);
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error loading breeds:', error);
+        breedSelect.innerHTML = '<option value="">Error loading breeds</option>';
+    }
+}
+
+// Initialize service selection handlers
+function initializeServiceHandlers() {
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('service-checkbox')) {
+            updateAppointmentTotal();
+        }
+    });
+}
+
+// Replace the existing updateAppointmentTotal function:
+function updateAppointmentTotal() {
+    let total = 0;
+    const checkedServices = document.querySelectorAll('.service-checkbox:checked');
+    
+    checkedServices.forEach(checkbox => {
+        total += parseFloat(checkbox.dataset.price);
+    });
+    
+    // Find the total element - it might be in different locations
+    const totalElement = document.querySelector('.text-lg.font-bold.text-primary:last-child') || 
+                        document.querySelector('#appointmentTotal') ||
+                        document.querySelector('[class*="text-lg"][class*="font-bold"][class*="text-primary"]');
+    
+    if (totalElement) {
+        totalElement.textContent = `₱${total.toFixed(2)}`;
+    }
+}
+
+
+
+async function loadBreeds(petType, breedSelect) {
+    try {
+        breedSelect.innerHTML = '<option value="">Loading breeds...</option>';
+        breedSelect.disabled = false;
+        
+        let apiUrl = '';
+        if (petType === 'dog') {
+            apiUrl = 'https://dog.ceo/api/breeds/list/all';
+        } else if (petType === 'cat') {
+            apiUrl = 'https://api.thecatapi.com/v1/breeds';
+        }
+        
+        if (!apiUrl) {
+            breedSelect.innerHTML = '<option value="">Select breed</option>';
+            return;
+        }
+        
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        
+        breedSelect.innerHTML = '<option value="">Select breed</option>';
+        
+        if (petType === 'dog') {
+            const breeds = Object.keys(data.message);
+            breeds.sort().forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed;
+                option.textContent = breed.charAt(0).toUpperCase() + breed.slice(1).replace(/[-_]/g, ' ');
+                breedSelect.appendChild(option);
+            });
+        } else if (petType === 'cat') {
+            data.sort((a, b) => a.name.localeCompare(b.name)).forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed.name;
+                option.textContent = breed.name;
+                breedSelect.appendChild(option);
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error loading breeds:', error);
+        breedSelect.innerHTML = '<option value="">Error loading breeds</option>';
+    }
+}
+
+// Handle appointment form submission
+async function handleAppointmentSubmission(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    // Validate required fields
+    const petName = formData.get('petName');
+    const petType = formData.get('petType');
+    const petBreed = formData.get('petBreed');
+    const preferredDate = formData.get('preferredDate');
+    const preferredTime = formData.get('preferredTime');
+    
+    if (!petName || !petType || !petBreed || !preferredDate || !preferredTime) {
+        showNotification('Please fill in all required fields', 'warning');
+        return;
+    }
+    
+    // Get selected services
+    const selectedServices = [];
+    document.querySelectorAll('.service-checkbox:checked').forEach(checkbox => {
+        selectedServices.push(parseInt(checkbox.dataset.id));
+    });
+    
+    if (selectedServices.length === 0) {
+        showNotification('Please select at least one service', 'warning');
+        return;
+    }
+    
+    try {
+        const token = localStorage.getItem('authToken');
+        
+        showNotification('Booking appointment...', 'info');
+        
+        const appointmentData = {
+            action: 'book_appointment',
+            petName: petName,
+            petType: petType,
+            petBreed: petBreed,
+            petAge: formData.get('petAge'),
+            petSize: formData.get('petSize'),
+            preferredDate: preferredDate,
+            preferredTime: preferredTime,
+            preferredStaff: formData.get('preferredStaff'),
+            services: selectedServices,
+            specialInstructions: formData.get('specialInstructions')
+        };
+        
+        const response = await fetch(`${API_BASE}appointments.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(appointmentData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Appointment booked successfully!', 'success');
+            
+            // Reset form
+            form.reset();
+            document.querySelectorAll('.service-checkbox').forEach(cb => cb.checked = false);
+            updateAppointmentTotal();
+            
+            // Optionally switch to tracking section
+            setTimeout(() => {
+                showSection('tracking');
+            }, 2000);
+            
+        } else {
+            throw new Error(result.error || 'Failed to book appointment');
+        }
+        
+    } catch (error) {
+        console.error('Error booking appointment:', error);
+        showNotification('Error booking appointment: ' + error.message, 'error');
+    }
+}
+
+// Add this to your DOMContentLoaded event listener in customer_portal.js
+document.addEventListener('DOMContentLoaded', async function() {
+    // ... existing code ...
+    
+    // Initialize appointments when page loads
+    await initializeAppointments();
+    
+    // Add form submission handler
+    const appointmentForm = document.querySelector('#appointment form');
+    if (appointmentForm) {
+        appointmentForm.addEventListener('submit', handleAppointmentSubmission);
+    }
+    
+    // ... rest of existing code ...
+});
