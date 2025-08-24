@@ -1,5 +1,5 @@
   // API base URL - adjust this to your server location
-        const API_BASE = 'http://localhost/8paws/api/';
+        const API_BASE = 'http://localhost/animates/api/';
         
         let verificationToken = null;
         let resendTimer = null;

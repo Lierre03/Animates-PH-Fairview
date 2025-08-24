@@ -6,9 +6,258 @@ let bookingId = null;
 let rfidPollingInterval = null;
 let rfidAssigned = false;
 let lastNotifiedError = null; // Track last error to prevent spam
+let servicesData = {};
+let currentPetSize = '';
 
 // API base URL - adjust this to your server location
-const API_BASE = 'http://localhost/8paws/api/';
+const API_BASE = 'http://localhost/animates/api/';
+
+
+// Add this function near the top of the file with other utility functions
+function getPhysicalCardNumber(cardUID) {
+    const cardMapping = {
+        '22:b0:8f:c3': 'Card #1',
+        'c2:48:94:ab': 'Card #2', 
+        '11:7b:b0:01': 'Card #4',
+        '4c:3f:b6:01': 'Card #6',
+        '53:89:08:02': 'Card #3',
+        '69:33:b2:01': 'Card #5'
+    };
+    
+    return cardMapping[cardUID] || `Unknown Card (${cardUID})`;
+}
+
+
+// Load services when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadServicesFromDatabase();
+    
+    // Add event listener for pet size selection
+    const petSizeSelect = document.getElementById('petSizeForPricing');
+    petSizeSelect.addEventListener('change', function() {
+        currentPetSize = this.value;
+        renderServices();
+        // Clear selected services when size changes
+        selectedServices = [];
+        updateOrderSummary();
+    });
+});
+
+async function loadServicesFromDatabase() {
+    try {
+        const response = await fetch(API_BASE + 'services.php?action=get_services');
+        const result = await response.json();
+        
+        if (result.success) {
+            servicesData = result.services;
+            renderServices();
+        } else {
+            throw new Error(result.error || 'Failed to load services');
+        }
+    } catch (error) {
+        console.error('Error loading services:', error);
+        showNotification('Failed to load services. Please refresh the page.', 'error');
+        
+        // Show error state in services container
+        document.getElementById('servicesContainer').innerHTML = `
+            <div class="text-center py-8">
+                <svg class="w-12 h-12 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-red-600 font-medium">Failed to load services</p>
+                <button onclick="loadServicesFromDatabase()" class="mt-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200">
+                    Try Again
+                </button>
+            </div>
+        `;
+    }
+}
+
+function renderServices() {
+    const container = document.getElementById('servicesContainer');
+    
+    if (!currentPetSize) {
+        container.innerHTML = `
+            <div class="text-center py-8">
+                <svg class="w-12 h-12 text-amber-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-amber-600 font-medium">Please select your pet's size first</p>
+                <p class="text-sm text-amber-500">This will show accurate pricing for all services</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    
+    // Basic Services
+    if (servicesData.basic && servicesData.basic.length > 0) {
+        html += renderServiceCategory('basic', 'Basic Services', 'blue', servicesData.basic);
+    }
+    
+    // Premium Services
+    if (servicesData.premium && servicesData.premium.length > 0) {
+        html += renderServiceCategory('premium', 'Premium Services', 'purple', servicesData.premium);
+    }
+    
+    // Add-ons
+    if (servicesData.addon && servicesData.addon.length > 0) {
+        html += renderServiceCategory('addon', 'Add-ons', 'green', servicesData.addon);
+    }
+    
+    container.innerHTML = html;
+    
+    // Re-attach event listeners
+    const checkboxes = document.querySelectorAll('.service-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateServiceSelection);
+    });
+}
+
+function renderServiceCategory(categoryKey, categoryTitle, color, services) {
+    const colorClasses = {
+        blue: {
+            gradient: 'from-blue-50 to-indigo-50',
+            border: 'border-blue-200',
+            iconBg: 'bg-blue-100',
+            iconText: 'text-blue-600',
+            titleText: 'text-blue-900',
+            itemBorder: 'border-blue-200 hover:border-blue-300'
+        },
+        purple: {
+            gradient: 'from-purple-50 to-pink-50',
+            border: 'border-purple-200',
+            iconBg: 'bg-purple-100',
+            iconText: 'text-purple-600',
+            titleText: 'text-purple-900',
+            itemBorder: 'border-purple-200 hover:border-purple-300'
+        },
+        green: {
+            gradient: 'from-green-50 to-emerald-50',
+            border: 'border-green-200',
+            iconBg: 'bg-green-100',
+            iconText: 'text-green-600',
+            titleText: 'text-green-900',
+            itemBorder: 'border-green-200 hover:border-green-300'
+        }
+    };
+    
+    const colors = colorClasses[color];
+    const icons = {
+        basic: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>',
+        premium: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>',
+        addon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12z"></path>'
+    };
+    
+    let html = `
+        <div class="bg-gradient-to-r ${colors.gradient} border-2 ${colors.border} rounded-xl p-6 shadow-sm">
+            <div class="flex items-center mb-4">
+                <div class="inline-flex items-center justify-center w-10 h-10 ${colors.iconBg} rounded-full mr-3">
+                    <svg class="w-6 h-6 ${colors.iconText}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        ${icons[categoryKey]}
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold ${colors.titleText}">${categoryTitle}</h3>
+            </div>
+            <div class="space-y-4">
+    `;
+    
+   services.forEach(service => {
+    const price = getServicePrice(service);
+    let priceDisplay = '';
+    let isDisabled = false;
+    
+    if (service.is_size_based && currentPetSize && price > 0) {
+        // Size-based service with selected size - show specific price
+        priceDisplay = `₱${price.toFixed(2)}`;
+        isDisabled = false;
+    } else if (service.is_size_based && !currentPetSize) {
+        // Size-based service without selected size - show base price if available
+        if (service.base_price && service.base_price > 0) {
+            priceDisplay = `From ₱${service.base_price.toFixed(2)}`;
+        } else {
+            // Find the lowest price from available pricing
+            const prices = Object.values(service.pricing || {});
+            if (prices.length > 0) {
+                const minPrice = Math.min(...prices);
+                priceDisplay = `From ₱${minPrice.toFixed(2)}`;
+            } else {
+                priceDisplay = 'Select pet size first';
+            }
+        }
+        isDisabled = true; // Disable until size is selected
+    } else if (!service.is_size_based) {
+        // Fixed price service - always show price and enable
+        if (price > 0) {
+            priceDisplay = `₱${price.toFixed(2)}`;
+            isDisabled = false;
+        } else if (service.base_price && service.base_price > 0) {
+            priceDisplay = `₱${service.base_price.toFixed(2)}`;
+            isDisabled = false;
+        } else {
+            priceDisplay = 'Price not available';
+            isDisabled = true;
+        }
+    } else {
+        // Fallback case
+        priceDisplay = 'Select pet size first';
+        isDisabled = true;
+    }
+    
+    html += `
+        <label class="flex items-center p-4 bg-white/80 rounded-lg border ${colors.itemBorder} transition-all duration-200 cursor-pointer hover:shadow-md ${isDisabled ? 'opacity-60' : ''}">
+            <input type="checkbox" class="service-checkbox w-5 h-5 text-primary rounded" 
+                   data-service-id="${service.id}"
+                   data-service="${service.name}" 
+                   data-price="${price}"
+                   ${isDisabled ? 'disabled' : ''}>
+            <div class="ml-4 flex-1 flex justify-between items-center">
+                <div>
+                    <span class="font-medium text-gray-900">${service.name}</span>
+                    <p class="text-sm text-gray-600">${service.description}</p>
+                    ${service.is_size_based ? `<p class="text-xs text-gray-500 mt-1">Size-based pricing</p>` : ''}
+                    ${isDisabled && service.is_size_based ? `<p class="text-xs text-amber-600 mt-1">Please select pet size above</p>` : ''}
+                </div>
+                <span class="text-lg font-bold text-primary">${priceDisplay}</span>
+            </div>
+        </label>
+    `;
+});
+    
+    html += `
+            </div>
+        </div>
+    `;
+    
+    return html;
+}
+
+
+function getServicePrice(service) {
+    // For size-based services, return specific size price if available
+    if (service.is_size_based && currentPetSize && service.pricing && service.pricing[currentPetSize]) {
+        return service.pricing[currentPetSize];
+    }
+    
+    // For non-size-based services, return any available price
+    if (!service.is_size_based) {
+        // Check if there's a fixed price in pricing object
+        if (service.pricing && Object.keys(service.pricing).length > 0) {
+            return Object.values(service.pricing)[0]; // Return first available price
+        }
+        // Fallback to base price
+        if (service.base_price && service.base_price > 0) {
+            return service.base_price;
+        }
+    }
+    
+    // Return 0 if no price available (will trigger "Select pet size first" message)
+    return 0;
+}
+
+
+
 
 // Step navigation
 function nextStep() {
@@ -17,6 +266,13 @@ function nextStep() {
             goToStep(2);
         }
     } else if (currentStep === 2) {
+        // Validate pet size selection
+        if (!currentPetSize) {
+            showNotification('Please select your pet size for pricing', 'warning');
+            document.getElementById('petSizeForPricing').focus();
+            return;
+        }
+        
         if (selectedServices.length > 0) {
             goToStep(3);
             startRFIDAssignment();
@@ -75,7 +331,6 @@ function updateProgress(step) {
     }
 }
 
-// Validate pet information
 function validatePetInfo() {
     const required = ['petName', 'petType', 'ownerName', 'ownerPhone', 'ownerEmail'];
     let isValid = true;
@@ -131,9 +386,8 @@ function validatePetInfo() {
         petData.petBreed = breedValue;
     }
 
-    // Store optional fields
+    // Store optional fields (petAge only, remove petSize)
     petData.petAge = document.getElementById('petAge').value;
-    petData.petSize = document.getElementById('petSize').value;
     petData.specialNotes = document.getElementById('specialNotes').value;
     
     return isValid;
@@ -240,6 +494,7 @@ function updateServiceSelection() {
     
     document.querySelectorAll('.service-checkbox:checked').forEach(checkbox => {
         const service = {
+            id: parseInt(checkbox.dataset.serviceId),
             name: checkbox.dataset.service,
             price: parseFloat(checkbox.dataset.price)
         };
@@ -260,6 +515,11 @@ function updateServiceSelection() {
         nextBtn.className = 'bg-gray-300 text-gray-500 px-8 py-3 rounded-lg font-medium cursor-not-allowed';
     }
 }
+
+
+
+
+
 
 function updateOrderSummary() {
     const servicesContainer = document.getElementById('selectedServices');
@@ -359,10 +619,19 @@ function handleRFIDDetection(rfidData) {
     const pulseIndicator = document.querySelector('.flex.space-x-1'); // Select the pulse container
     
     if (rfidData.isFirstTap) {
+        // Get physical card number
+        const physicalCardNumber = getPhysicalCardNumber(rfidData.cardUID);
+        
         // First tap - assign RFID for check-in
         rfidStatus.textContent = 'RFID Card Detected!';
-        rfidMessage.textContent = 'Card assigned successfully';
-        assignedTag.textContent = rfidData.customUID;
+        rfidMessage.textContent = `${physicalCardNumber} assigned successfully`;
+        assignedTag.innerHTML = `
+            <div class="text-center">
+                <div class="text-3xl font-mono font-bold text-primary mb-1">${rfidData.customUID}</div>
+                <div class="text-sm text-gray-600">${physicalCardNumber}</div>
+              
+            </div>
+        `;
         
         // Hide the pulse animation
         if (pulseIndicator) {
@@ -381,13 +650,16 @@ function handleRFIDDetection(rfidData) {
         // Stop polling
         stopRFIDPolling();
         
-        showNotification('RFID card detected and assigned!', 'success');
+        showNotification(`${physicalCardNumber} detected and assigned!`, 'success');
         
     } else {
+        // Get physical card number for subsequent taps too
+        const physicalCardNumber = getPhysicalCardNumber(rfidData.cardUID);
+        
         // Subsequent tap - show status update message
         rfidStatus.textContent = `RFID Tap #${rfidData.tapCount} Detected`;
-        rfidMessage.textContent = 'Pet status updated - Tap logged';
-        showNotification(`RFID tap #${rfidData.tapCount} logged - Status updated`, 'info');
+        rfidMessage.textContent = `${physicalCardNumber} - Pet status updated`;
+        showNotification(`${physicalCardNumber} tap #${rfidData.tapCount} logged - Status updated`, 'info');
     }
 }
 
@@ -439,6 +711,7 @@ async function completeBooking() {
             petBreed: petData.petBreed,
             petAge: petData.petAge,
             petSize: petData.petSize,
+            selectedPetSize: currentPetSize || petData.selectedPetSize, // Add the size used for pricing
             ownerName: petData.ownerName,
             ownerPhone: petData.ownerPhone,
             ownerEmail: petData.ownerEmail,
@@ -448,7 +721,10 @@ async function completeBooking() {
             customRFID: petData.rfidTag
         };
 
-        const response = await fetch(API_BASE + 'check_in.php', {
+        console.log('Sending booking data:', bookingData);
+        console.log('API URL:', API_BASE + 'check_in.php');
+
+       const response = await fetch(API_BASE + 'check_in.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -456,9 +732,20 @@ async function completeBooking() {
             body: JSON.stringify(bookingData)
         });
 
-        const result = await response.json();
+        // Check if response is actually JSON before parsing
+        const responseText = await response.text();
+        console.log('Raw response:', responseText); // Debug log
 
-          if (result.success) {
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('JSON parse error:', parseError);
+            console.error('Response text:', responseText);
+            throw new Error('Server returned invalid response. Check console for details.');
+        }
+
+        if (result.success) {
             bookingId = result.booking_id;
             
             // Show success message
@@ -504,9 +791,9 @@ async function completeBooking() {
 
 function updateBookingSummary() {
     document.getElementById('summaryPetName').textContent = petData.petName;
-    document.getElementById('summaryPetDetails').textContent = `${petData.petType} - ${petData.petBreed} ${petData.petAge ? `• ${petData.petAge}` : ''} ${petData.petSize ? `• ${petData.petSize}` : ''}`;
+    document.getElementById('summaryPetDetails').textContent = `${petData.petType} - ${petData.petBreed}${petData.petAge ? ` • ${petData.petAge}` : ''}${currentPetSize ? ` • ${currentPetSize}` : ''}`;
     document.getElementById('summaryOwnerName').textContent = petData.ownerName;
-    document.getElementById('summaryOwnerContact').textContent = `${petData.ownerPhone} ${petData.ownerEmail ? `• ${petData.ownerEmail}` : ''}`;
+    document.getElementById('summaryOwnerContact').textContent = `${petData.ownerPhone}${petData.ownerEmail ? ` • ${petData.ownerEmail}` : ''}`;
     
     const servicesContainer = document.getElementById('summaryServices');
     servicesContainer.innerHTML = selectedServices.map(service => 

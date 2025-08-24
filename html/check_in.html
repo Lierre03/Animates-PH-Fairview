@@ -153,7 +153,7 @@
                             </div>
                         </div>
 
-                        <div>
+                        <!-- <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Pet Size</label>
                             <select id="petSize" 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
@@ -163,7 +163,7 @@
                                 <option value="large">Large (60-90 lbs)</option>
                                 <option value="xlarge">Extra Large (90+ lbs)</option>
                             </select>
-                        </div>
+                        </div> -->
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Owner Name *</label>
@@ -208,180 +208,93 @@
 
             <!-- Step 2: Service Selection -->
             <div id="form-step-2" class="form-step hidden">
-                <div class="px-6 py-8 sm:px-10">
-                    <div class="text-center mb-8">
-                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full mb-4">
-                            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                            </svg>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Select Grooming Services</h2>
-                        <p class="text-gray-600">Choose the services your pet needs today</p>
-                    </div>
+    <div class="px-6 py-8 sm:px-10">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full mb-4">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Select Grooming Services</h2>
+            <p class="text-gray-600">Choose the services your pet needs today</p>
+        </div>
 
-                    <div class="space-y-6 mb-8">
-                        <!-- Basic Services -->
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 shadow-sm">
-                            <div class="flex items-center mb-4">
-                                <div class="inline-flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full mr-3">
-                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                    </svg>
-                                </div>
-                                <h3 class="text-lg font-semibold text-blue-900">Basic Services</h3>
-                            </div>
-                            <div class="space-y-4">
-                                <label class="flex items-center p-4 bg-white/80 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary rounded" data-price="300" data-service="Basic Bath">
-                                    <div class="ml-4 flex-1 flex justify-between items-center">
-                                        <div>
-                                            <span class="font-medium text-gray-900">Basic Bath</span>
-                                            <p class="text-sm text-gray-600">Shampoo, rinse, and basic dry</p>
-                                        </div>
-                                        <span class="text-lg font-bold text-primary">₱300.00</span>
-                                    </div>
-                                </label>
-                                <label class="flex items-center p-4 bg-white/80 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary rounded" data-price="150" data-service="Nail Trimming">
-                                    <div class="ml-4 flex-1 flex justify-between items-center">
-                                        <div>
-                                            <span class="font-medium text-gray-900">Nail Trimming</span>
-                                            <p class="text-sm text-gray-600">Professional nail care</p>
-                                        </div>
-                                        <span class="text-lg font-bold text-primary">₱150.00</span>
-                                    </div>
-                                </label>
-                                <label class="flex items-center p-4 bg-white/80 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary rounded" data-price="200" data-service="Ear Cleaning">
-                                    <div class="ml-4 flex-1 flex justify-between items-center">
-                                        <div>
-                                            <span class="font-medium text-gray-900">Ear Cleaning</span>
-                                            <p class="text-sm text-gray-600">Safe ear cleaning and inspection</p>
-                                        </div>
-                                        <span class="text-lg font-bold text-primary">₱200.00</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
+        <!-- Pet Size Selection for Pricing -->
+        <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-6 shadow-sm mb-6">
+            <div class="flex items-center mb-4">
+                <div class="inline-flex items-center justify-center w-10 h-10 bg-amber-100 rounded-full mr-3">
+                    <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-amber-900">Pet Size for Pricing</h3>
+            </div>
+            <div class="bg-white/80 rounded-lg p-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Select your pet's size to see accurate pricing *</label>
+                <select id="petSizeForPricing" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                    <option value="">Select pet size for pricing</option>
+                    <option value="small">Small (0-15 lbs)</option>
+                    <option value="medium">Medium (16-40 lbs)</option>
+                    <option value="large">Large (41-70 lbs)</option>
+                    <option value="extra_large">Extra Large (71+ lbs)</option>
+                </select>
+                <p class="text-sm text-amber-700 mt-2">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Prices vary by pet size. Please select to see accurate pricing.
+                </p>
+            </div>
+        </div>
 
-                        <!-- Premium Services -->
-                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-6 shadow-sm">
-                            <div class="flex items-center mb-4">
-                                <div class="inline-flex items-center justify-center w-10 h-10 bg-purple-100 rounded-full mr-3">
-                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
-                                    </svg>
-                                </div>
-                                <h3 class="text-lg font-semibold text-purple-900">Premium Services</h3>
-                            </div>
-                            <div class="space-y-4">
-                                <label class="flex items-center p-4 bg-white/80 rounded-lg border border-purple-200 hover:border-purple-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary rounded" data-price="600" data-service="Full Grooming Package">
-                                    <div class="ml-4 flex-1 flex justify-between items-center">
-                                        <div>
-                                            <span class="font-medium text-gray-900">Full Grooming Package</span>
-                                            <p class="text-sm text-gray-600">Bath, cut, style, nails, ears, and teeth</p>
-                                        </div>
-                                        <span class="text-lg font-bold text-primary">₱600.00</span>
-                                    </div>
-                                </label>
-                                <label class="flex items-center p-4 bg-white/80 rounded-lg border border-purple-200 hover:border-purple-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary rounded" data-price="250" data-service="Dental Care">
-                                    <div class="ml-4 flex-1 flex justify-between items-center">
-                                        <div>
-                                            <span class="font-medium text-gray-900">Dental Care</span>
-                                            <p class="text-sm text-gray-600">Teeth cleaning and oral health check</p>
-                                        </div>
-                                        <span class="text-lg font-bold text-primary">₱250.00</span>
-                                    </div>
-                                </label>
-                                <label class="flex items-center p-4 bg-white/80 rounded-lg border border-purple-200 hover:border-purple-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary rounded" data-price="400" data-service="De-shedding Treatment">
-                                    <div class="ml-4 flex-1 flex justify-between items-center">
-                                        <div>
-                                            <span class="font-medium text-gray-900">De-shedding Treatment</span>
-                                            <p class="text-sm text-gray-600">Reduces shedding up to 90%</p>
-                                        </div>
-                                        <span class="text-lg font-bold text-primary">₱400.00</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
+        <div id="servicesContainer" class="space-y-6 mb-8">
+            <!-- Services will be loaded here dynamically -->
+            <div class="text-center py-8">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p class="text-gray-600">Loading services...</p>
+            </div>
+        </div>
 
-                        <!-- Add-ons -->
-                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6 shadow-sm">
-                            <div class="flex items-center mb-4">
-                                <div class="inline-flex items-center justify-center w-10 h-10 bg-green-100 rounded-full mr-3">
-                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12z"></path>
-                                    </svg>
-                                </div>
-                                <h3 class="text-lg font-semibold text-green-900">Add-ons</h3>
-                            </div>
-                            <div class="space-y-4">
-                                <label class="flex items-center p-4 bg-white/80 rounded-lg border border-green-200 hover:border-green-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary rounded" data-price="100" data-service="Nail Polish">
-                                    <div class="ml-4 flex-1 flex justify-between items-center">
-                                        <div>
-                                            <span class="font-medium text-gray-900">Nail Polish</span>
-                                            <p class="text-sm text-gray-600">Pet-safe nail colors</p>
-                                        </div>
-                                        <span class="text-lg font-bold text-primary">₱100.00</span>
-                                    </div>
-                                </label>
-                                <label class="flex items-center p-4 bg-white/80 rounded-lg border border-green-200 hover:border-green-300 transition-all duration-200 cursor-pointer hover:shadow-md">
-                                    <input type="checkbox" class="service-checkbox w-5 h-5 text-primary rounded" data-price="150" data-service="Perfume & Bow">
-                                    <div class="ml-4 flex-1 flex justify-between items-center">
-                                        <div>
-                                            <span class="font-medium text-gray-900">Perfume & Bow</span>
-                                            <p class="text-sm text-gray-600">Finishing touches for a perfect look</p>
-                                        </div>
-                                        <span class="text-lg font-bold text-primary">₱150.00</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Order Summary -->
-                    <div class="bg-gradient-to-r from-primary/5 to-secondary/5 border-2 border-primary/20 rounded-xl p-6 mb-8 shadow-lg">
-                        <div class="flex items-center mb-4">
-                            <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                            </svg>
-                            <h3 class="text-lg font-semibold text-gray-900">Order Summary</h3>
-                        </div>
-                        <div id="selectedServices" class="space-y-3 mb-6">
-                            <div class="text-center py-8">
-                                <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                                </svg>
-                                <p class="text-gray-500 font-medium">No services selected</p>
-                                <p class="text-sm text-gray-400">Choose from the services above</p>
-                            </div>
-                        </div>
-                        <div class="border-t-2 border-primary/20 pt-4">
-                            <div class="flex justify-between items-center bg-white/80 rounded-lg p-4">
-                                <span class="text-xl font-bold text-gray-900">Total Amount:</span>
-                                <span id="totalAmount" class="text-2xl font-bold text-primary">₱0</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-between">
-                        <button type="button" onclick="previousStep()" class="inline-flex items-center px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-all duration-200 border border-gray-300 hover:border-gray-400">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                            </svg>
-                            Back
-                        </button>
-                        <button type="button" onclick="nextStep()" id="servicesNextBtn" disabled 
-                                class="bg-gray-300 text-gray-500 px-8 py-3 rounded-lg font-medium cursor-not-allowed">
-                            Next: RFID Assignment
-                        </button>
-                    </div>
+        <!-- Order Summary -->
+        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 border-2 border-primary/20 rounded-xl p-6 mb-8 shadow-lg">
+            <div class="flex items-center mb-4">
+                <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <h3 class="text-lg font-semibold text-gray-900">Order Summary</h3>
+            </div>
+            <div id="selectedServices" class="space-y-3 mb-6">
+                <div class="text-center py-8">
+                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    </svg>
+                    <p class="text-gray-500 font-medium">No services selected</p>
+                    <p class="text-sm text-gray-400">Choose from the services above</p>
                 </div>
             </div>
+            <div class="border-t-2 border-primary/20 pt-4">
+                <div class="flex justify-between items-center bg-white/80 rounded-lg p-4">
+                    <span class="text-xl font-bold text-gray-900">Total Amount:</span>
+                    <span id="totalAmount" class="text-2xl font-bold text-primary">₱0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between">
+            <button type="button" onclick="previousStep()" class="inline-flex items-center px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-all duration-200 border border-gray-300 hover:border-gray-400">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Back
+            </button>
+            <button type="button" onclick="nextStep()" id="servicesNextBtn" disabled 
+                    class="bg-gray-300 text-gray-500 px-8 py-3 rounded-lg font-medium cursor-not-allowed">
+                Next: RFID Assignment
+            </button>
+        </div>
+    </div>
+</div>
 
             <!-- Step 3: RFID Assignment -->
             <div id="form-step-3" class="form-step hidden">
@@ -406,9 +319,23 @@
                         <h3 class="text-2xl font-bold text-gray-900 mb-3" id="rfidStatus">Assigning RFID Tag...</h3>
                         <p class="text-gray-600 mb-6" id="rfidMessage">Please wait while we assign a tracking tag for your pet</p>
                         
-                        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-lg p-6 inline-block mb-6">
+                        <!-- <div class="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-lg p-6 inline-block mb-6">
                             <p class="text-sm text-gray-600 mb-2">Assigned Tag ID:</p>
                             <p class="text-3xl font-mono font-bold text-primary" id="assignedTag"></p>
+                            <div class="flex justify-center mt-3">
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                                    <div class="w-2 h-2 bg-primary rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+                                    <div class="w-2 h-2 bg-primary rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-lg p-6 inline-block mb-6">
+                            <p class="text-sm text-gray-600 mb-2">Assigned Tag Details:</p>
+                            <div id="assignedTag" class="text-center">
+                                <!-- Card details will be populated here -->
+                            </div>
                             <div class="flex justify-center mt-3">
                                 <div class="flex space-x-1">
                                     <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>

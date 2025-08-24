@@ -5,7 +5,7 @@ let trackingToken = null;
 let lastKnownStatus = null;
 
 // API base URL
-const API_BASE = 'http://localhost/8paws/api/';
+const API_BASE = 'http://localhost/animates/api/';
 
 
 const statusConfig = {
