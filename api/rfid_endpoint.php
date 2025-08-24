@@ -176,15 +176,17 @@ function updateBookingStatus($db, $cardId, $input) {
     $result['is_completion'] = ($tapCount === 5);  // NEW - check if completion
     
     // Find booking using custom_rfid (which matches custom_uid)
+    // In updateBookingStatus(), change the query to:
     $stmt = $db->prepare("
-        SELECT id, status 
-        FROM bookings 
-        WHERE custom_rfid = ? 
-        AND status NOT IN ('completed', 'cancelled')
-        ORDER BY created_at DESC 
+        SELECT b.id, b.status, b.custom_rfid
+        FROM bookings b
+        JOIN rfid_cards r ON r.id = b.rfid_card_id 
+        WHERE r.card_uid = ? 
+        AND b.status NOT IN ('completed', 'cancelled')
+        ORDER BY b.created_at DESC 
         LIMIT 1
     ");
-    $stmt->execute([$customUID]);
+    $stmt->execute([$input['card_uid']]); // Use card_uid instead of custom_uid
     $booking = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$booking) {

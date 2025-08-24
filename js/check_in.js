@@ -16,7 +16,7 @@ const API_BASE = 'http://localhost/animates/api/';
 // Add this function near the top of the file with other utility functions
 function getPhysicalCardNumber(cardUID) {
     const cardMapping = {
-        '22:b0:8f:c3': 'Card #1',
+        '73:77:f8:39': 'Card #1',
         'c2:48:94:ab': 'Card #2', 
         '11:7b:b0:01': 'Card #4',
         '4c:3f:b6:01': 'Card #6',

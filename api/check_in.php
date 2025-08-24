@@ -488,7 +488,7 @@ function sendTrackingLinkEmail($bookingId, $customerEmail, $customRFID) {
         
         $trackingUrl = "http://yourdomain.com/html/guest_dashboard.html?token=" . urlencode($customRFID);
         
-        $subject = "Track Your Pet's Grooming Progress - 8Paws Pet Boutique";
+        $subject = "Track Your Pet's Grooming Progress - Animates PH - Camaro Branch";
         $message = "
         <html>
         <body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
