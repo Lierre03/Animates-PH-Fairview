@@ -2,6 +2,18 @@
 require_once '../config/database.php';
 require_once '../includes/email_functions.php';
 
+// Start output buffering to prevent warnings from interfering with JSON response
+ob_start();
+
+// Set error reporting to not display errors (but still log them)
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+
+$method = $_SERVER['REQUEST_METHOD'];
+
+// Try to send emails (after successful booking creation)
+$emailSent = false;
+$trackingEmailSent = false;
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -18,6 +30,34 @@ switch($method) {
         http_response_code(405);
         echo json_encode(['error' => 'Method not allowed']);
         break;
+}
+
+
+try {
+    // Send booking confirmation email (suppress warnings for local development)
+    if ($_SERVER['HTTP_HOST'] === 'localhost' || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false) {
+        // For local development, simulate successful email sending
+        $emailSent = true;
+        $trackingEmailSent = true;
+        error_log("Local development: Email sending simulation enabled");
+    } else {
+        // Send booking confirmation email
+        $emailSent = sendBookingConfirmationEmail($bookingId);
+        
+        // Send tracking link email
+        $trackingEmailSent = sendTrackingLinkEmail($bookingId, $input['ownerEmail'], $input['customRFID']);
+    }
+    
+    // Update email sent flags if successful
+    if ($emailSent || $trackingEmailSent) {
+        $stmt = $db->prepare("UPDATE bookings SET welcome_email_sent = 1 WHERE id = ?");
+        $stmt->execute([$bookingId]);
+    }
+} catch (Exception $emailError) {
+    error_log("Email sending failed: " . $emailError->getMessage());
+    // Don't fail the entire booking if email fails
+    $emailSent = false;
+    $trackingEmailSent = false;
 }
 
 function getLatestRFIDFromMySQL() {
@@ -52,6 +92,8 @@ function getLatestRFIDFromMySQL() {
             
             if ($isAvailable) {
                 // First tap and available - ready for check-in
+                ob_clean();
+
                 echo json_encode([
                     'success' => true,
                     'customUID' => $latestTap['custom_uid'],
@@ -73,6 +115,7 @@ function getLatestRFIDFromMySQL() {
             // Subsequent tap - update pet status if booking exists
             updatePetStatusByRFID($latestTap['custom_uid']);
             
+            ob_clean();
             echo json_encode([
                 'success' => true,
                 'customUID' => $latestTap['custom_uid'],
@@ -243,7 +286,7 @@ function handleCheckin() {
         if (file_exists($lockFile)) {
             unlink($lockFile);
         }
-        
+        ob_clean();
         echo json_encode([
             'success' => true,
             'booking_id' => $bookingId,
@@ -255,23 +298,27 @@ function handleCheckin() {
         ]);
         
     } catch(Exception $e) {
-        // Remove lock file on error
-        $lockFile = sys_get_temp_dir() . '/booking_lock_' . md5($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-        if (file_exists($lockFile)) {
-            unlink($lockFile);
-        }
-        
-        if (isset($db) && $db->inTransaction()) {
-            $db->rollback();
-        }
-        
-        error_log('Check-in error: ' . $e->getMessage());
-        http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'error' => $e->getMessage()
-        ]);
+    // Remove lock file on error
+    $lockFile = sys_get_temp_dir() . '/booking_lock_' . md5($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    if (file_exists($lockFile)) {
+        unlink($lockFile);
     }
+    
+    if (isset($db) && $db->inTransaction()) {
+        $db->rollback();
+    }
+    
+    error_log('Check-in error: ' . $e->getMessage());
+    
+    // Clean any output buffer before sending JSON response
+    ob_clean();
+    
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
+}
 }
 
 // MODIFIED FUNCTION: Always create new customer records for historical purposes
@@ -393,8 +440,52 @@ function createStatusUpdate($db, $bookingId, $status, $notes) {
     $stmt->execute([$bookingId, $status, $notes]);
 }
 
+// function sendTrackingLinkEmail($bookingId, $customerEmail, $customRFID) {
+//     try {
+//         $trackingUrl = "http://yourdomain.com/html/guest_dashboard.html?token=" . urlencode($customRFID);
+        
+//         $subject = "Track Your Pet's Grooming Progress - 8Paws Pet Boutique";
+//         $message = "
+//         <html>
+//         <body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+//             <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;'>
+//                 <h1 style='color: white; margin: 0;'>8Paws Pet Boutique</h1>
+//                 <p style='color: white; margin: 5px 0 0 0;'>Pet Grooming & Care Services</p>
+//             </div>
+//             <div style='padding: 30px; background: white;'>
+//                 <h2 style='color: #333; margin-bottom: 20px;'>Track Your Pet's Progress</h2>
+//                 <p>Hello! Your pet has been successfully checked in for grooming services.</p>
+//                 <p>You can track your pet's progress in real-time by clicking the link below:</p>
+//                 <div style='text-align: center; margin: 30px 0;'>
+//                     <a href='{$trackingUrl}' style='background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;'>Track My Pet</a>
+//                 </div>
+//                 <p><strong>Booking ID:</strong> #{$bookingId}</p>
+//                 <p><strong>Tracking ID:</strong> {$customRFID}</p>
+//                 <p style='color: #666; font-size: 14px; margin-top: 30px;'>This page will automatically update as your pet moves through our grooming process. You'll receive notifications at each stage!</p>
+//             </div>
+//         </body>
+//         </html>";
+        
+//         $headers = "MIME-Version: 1.0" . "\r\n";
+//         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+//         $headers .= "From: 8Paws Pet Boutique <noreply@8pawspetboutique.com>" . "\r\n";
+        
+//         return mail($customerEmail, $subject, $message, $headers);
+        
+//     } catch(Exception $e) {
+//         error_log('Tracking email error: ' . $e->getMessage());
+//         return false;
+//     }
+// }
+
 function sendTrackingLinkEmail($bookingId, $customerEmail, $customRFID) {
     try {
+        // For local development, just return true to skip actual email sending
+        if ($_SERVER['HTTP_HOST'] === 'localhost' || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false) {
+            error_log("Local development: Skipping email send to {$customerEmail}");
+            return true;
+        }
+        
         $trackingUrl = "http://yourdomain.com/html/guest_dashboard.html?token=" . urlencode($customRFID);
         
         $subject = "Track Your Pet's Grooming Progress - 8Paws Pet Boutique";
@@ -423,7 +514,8 @@ function sendTrackingLinkEmail($bookingId, $customerEmail, $customRFID) {
         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
         $headers .= "From: 8Paws Pet Boutique <noreply@8pawspetboutique.com>" . "\r\n";
         
-        return mail($customerEmail, $subject, $message, $headers);
+        // Suppress warnings and return result
+        return @mail($customerEmail, $subject, $message, $headers);
         
     } catch(Exception $e) {
         error_log('Tracking email error: ' . $e->getMessage());
