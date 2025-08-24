@@ -15,8 +15,8 @@ function testEmailConfig() {
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = '8pawspetboutique@gmail.com';
-        $mail->Password   = 'ofvcexgxpmmzoond';
+        $mail->Username   = 'alertpoint.mrc@gmail.com';
+        $mail->Password   = 'ekoeiclfidgaaxko';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
         
@@ -90,12 +90,12 @@ function sendBookingConfirmationEmail($bookingId) {
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = '8pawspetboutique@gmail.com';
-        $mail->Password   = 'ofvcexgxpmmzoond';
+        $mail->Username   = 'alertpoint.mrc@gmail.com';
+        $mail->Password   = 'ekoeiclfidgaaxko';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
         
-        $mail->setFrom('8pawspetboutique@gmail.com', '8Paws Pet Boutique');
+        $mail->setFrom('alertpoint.mrc@gmail.com', '8Paws Pet Boutique');
         $mail->addAddress($booking['owner_email'], $booking['owner_name']);
         
         $mail->isHTML(true);
@@ -159,12 +159,12 @@ function sendBookingStatusEmailFromRFID($bookingId, $tapCount) {
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = '8pawspetboutique@gmail.com';
-        $mail->Password   = 'ofvcexgxpmmzoond';
+        $mail->Username   = 'alertpoint.mrc@gmail.com';
+        $mail->Password   = 'ekoeiclfidgaaxko';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
         
-        $mail->setFrom('8pawspetboutique@gmail.com', '8Paws Pet Boutique');
+        $mail->setFrom('alertpoint.mrc@gmail.com', '8Paws Pet Boutique');
         $mail->addAddress($booking['owner_email'], $booking['owner_name']);
         
         $mail->isHTML(true);
@@ -229,12 +229,12 @@ $status = $booking['current_status'];
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = '8pawspetboutique@gmail.com';
-        $mail->Password   = 'ofvcexgxpmmzoond';
+        $mail->Username   = 'alertpoint.mrc@gmail.com';
+        $mail->Password   = 'ekoeiclfidgaaxko';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
         
-        $mail->setFrom('8pawspetboutique@gmail.com', '8Paws Pet Boutique');
+        $mail->setFrom('alertpoint.mrc@gmail.com', '8Paws Pet Boutique');
         $mail->addAddress($booking['owner_email'], $booking['owner_name']);
         
         $mail->isHTML(true);
